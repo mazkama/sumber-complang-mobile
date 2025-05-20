@@ -88,4 +88,8 @@ interface ApiService {
     @POST("transaksi-tiket")
     fun createTransaksiTiket(@Body body: TransaksiTiketRequest): Call<TransaksiTiketResponse>
 
+    @GET("transaksi/detail/{orderId}")
+    fun getTransaksiDetail(@Path("orderId") orderId: String): Call<TransaksiTiketResponse>
+
+
 }

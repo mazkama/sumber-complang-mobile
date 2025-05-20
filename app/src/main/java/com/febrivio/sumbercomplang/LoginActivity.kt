@@ -89,6 +89,8 @@ class LoginActivity: AppCompatActivity() {
                         val intent = when (res.user.role.lowercase()) {
                             "petugas_kolam" -> Intent(this@LoginActivity, DashboardPetugasKolamActvity::class.java)
                             "petugas_parkir" -> Intent(this@LoginActivity, DashboardPetugasParkirActivity::class.java)
+                            "pengunjung" -> Intent(this@LoginActivity,
+                                DashboardPelangganActivity::class.java)
                             else -> Intent(this@LoginActivity, DashboardPetugasParkirActivity::class.java)
                         }
 

@@ -3,6 +3,7 @@ package com.febrivio.sumbercomplang
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
+import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
@@ -31,6 +32,7 @@ class TransaksiTiketActivity : AppCompatActivity() {
     private lateinit var transaksiTiketAdapter: TransaksiTiketAdapter
     private var selectedTiketList: List<Tiket> = emptyList()
     private var selectedPaymentMethod: String = "E-Wallet"
+    private var jenisTiket : String =  ""
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,16 +40,21 @@ class TransaksiTiketActivity : AppCompatActivity() {
         b = ActivityTransaksiTiketBinding.inflate(layoutInflater)
         setContentView(b.root)
 
+        jenisTiket = intent.getStringExtra("jenis_tiket").toString()
+
+        if (jenisTiket == "kolam") b.tvPembelianTiket.setText("Pembelian Tiket Kolam")
+        else b.tvPembelianTiket.setText("Pembelian Tiket Parkir")
+
         // Setup SwipeRefresh
         b.swipeRefreshLayout.setOnRefreshListener {
-            getTiketKolamData()
+            getTiketData(jenisTiket)
         }
 
         // Setup RecyclerView
         b.rvTiketKolam.layoutManager = LinearLayoutManager(this)
 
         // Load data
-        getTiketKolamData()
+        getTiketData(jenisTiket)
 
         b.btnBayar.setOnClickListener {
             showPaymentDialog()
@@ -59,10 +66,10 @@ class TransaksiTiketActivity : AppCompatActivity() {
 
     }
 
-    private fun getTiketKolamData() {
+    private fun getTiketData(jenis : String) {
         b.swipeRefreshLayout.isRefreshing = true
 
-        ApiClient.instance.getTiket("kolam").enqueue(object : Callback<TiketResponse> {
+        ApiClient.instance.getTiket(jenis).enqueue(object : Callback<TiketResponse> {
             override fun onResponse(call: Call<TiketResponse>, response: Response<TiketResponse>) {
                 b.swipeRefreshLayout.isRefreshing = false
                 if (response.isSuccessful) {
@@ -165,12 +172,17 @@ class TransaksiTiketActivity : AppCompatActivity() {
 
 
                     if (transaksiResponse != null && transaksiResponse.success) {
-                        val redirectUrl = transaksiResponse.data?.redirect_url
-                        val orderId = transaksiResponse.data?.order_id
+                        val redirectUrl = transaksiResponse.data?.redirectUrl
+                        val orderId = transaksiResponse.data?.orderId
                         if (redirectUrl != null) {
-                            val intent = Intent(this@TransaksiTiketActivity, WebViewActivity::class.java)
-                            intent.putExtra("url", redirectUrl)
-                            intent.putExtra("order_id", orderId) // Order ID yang valid
+//                            val intent = Intent(this@TransaksiTiketActivity, WebViewActivity::class.java)
+//                            intent.putExtra("url", redirectUrl)
+//                            intent.putExtra("order_id", orderId) // Order ID yang valid
+//                            startActivity(intent)
+
+                            val intent = Intent(this@TransaksiTiketActivity,
+                                DetailTransaksiActivity::class.java)
+                            intent.putExtra("transaksi", transaksiResponse.data)
                             startActivity(intent)
                         } else {
                             Toast.makeText(this@TransaksiTiketActivity, "URL redirect tidak ditemukan", Toast.LENGTH_SHORT).show()

@@ -46,9 +46,10 @@
                 android:orientation="vertical">
 
                 <TextView
+                    android:id="@+id/tvPembelianTiket"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Pembelian Tiket Kolam"
+                    android:text="Pembelian Tiket"
                     android:textColor="@android:color/white"
                     android:textSize="24sp"
                     android:textStyle="bold" />
@@ -56,7 +57,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="Data tiket kolam yang akan dijadikan \ninformasi tiket kolam"
+                    android:text="Data tiket yang akan dijadikan \ninformasi pembelian tiket"
                     android:textColor="@android:color/white"
                     android:textSize="14sp" />
 
@@ -65,15 +66,6 @@
         </RelativeLayout>
 
         <!-- RecyclerView -->
-        <TextView
-            android:id="@+id/tvPlihanTiket"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="20dp"
-            android:layout_marginTop="20dp"
-            android:text="Pilihan Tiket"
-            android:textSize="20sp"
-            android:textStyle="bold" />
 
         <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
             android:id="@+id/swipeRefreshLayout"

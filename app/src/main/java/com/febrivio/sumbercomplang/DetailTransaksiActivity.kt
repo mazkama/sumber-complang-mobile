@@ -1,54 +1,182 @@
 package com.febrivio.sumbercomplang
 
+import android.content.Intent
+import android.graphics.Bitmap
+import android.graphics.Color
+import android.net.Uri
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.widget.TextView
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
+import com.febrivio.sumbercomplang.adapter.DetailTransaksiTiketAdapter
 import com.febrivio.sumbercomplang.databinding.ActivityDetailTransaksiBinding
-import org.json.JSONArray
-import org.json.JSONObject
+import com.febrivio.sumbercomplang.model.TransaksiData
+import com.febrivio.sumbercomplang.model.TransaksiTiketResponse
+import com.febrivio.sumbercomplang.network.ApiClient
+import com.google.zxing.BarcodeFormat
+import com.google.zxing.EncodeHintType
+import com.google.zxing.MultiFormatWriter
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.*
 
 class DetailTransaksiActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityDetailTransaksiBinding
+    private lateinit var orderId: String
+    private var transaksiData: TransaksiData? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityDetailTransaksiBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        val jsonData = intent.getStringExtra("transaksi_data") ?: return
-        val jsonObject = JSONObject(jsonData)
+        binding.btnBack.setOnClickListener { onBackPressed() }
 
-        // Set data utama
-        binding.tvOrderId.text = "Order ID: ${jsonObject.getString("order_id")}"
-        binding.tvTanggal.text = "Tanggal: ${jsonObject.getString("tanggal")}"
-        binding.tvMetodePembayaran.text = "Metode: ${jsonObject.getString("metode_pembayaran")}"
-        binding.tvStatus.text = "Status: ${jsonObject.getString("status")}"
-        binding.tvTotalHarga.text = "Total: Rp${jsonObject.getString("total_harga")}"
+        transaksiData = intent.getSerializableExtra("transaksi") as? TransaksiData
+        if (transaksiData == null) {
+            finish()
+            return
+        }
 
-        // Data user
-        val user = jsonObject.getJSONObject("user")
-        binding.tvUserNama.text = "Nama: ${user.getString("nama")}"
-        binding.tvUserEmail.text = "Email: ${user.getString("email")}"
-
-        // Detail tiket
-        val detailTiketArray = jsonObject.getJSONArray("detail_tiket")
-        renderDetailTiket(detailTiketArray)
+        orderId = transaksiData!!.orderId
+        setupSwipeToRefresh()
+        setupTransactionDetails(transaksiData!!)
+        setupPaymentButtons()
     }
 
-    private fun renderDetailTiket(array: JSONArray) {
-        for (i in 0 until array.length()) {
-            val tiketObj = array.getJSONObject(i)
-            val tiketView = LayoutInflater.from(this).inflate(android.R.layout.simple_list_item_2, null)
-
-            val tv1 = tiketView.findViewById<TextView>(android.R.id.text1)
-            val tv2 = tiketView.findViewById<TextView>(android.R.id.text2)
-
-            tv1.text = "${tiketObj.getString("nama_tiket")} (x${tiketObj.getInt("jumlah")})"
-            tv2.text = "Subtotal: Rp${tiketObj.getString("subtotal")}"
-
-            binding.tiketContainer.addView(tiketView)
+    private fun setupSwipeToRefresh() {
+        binding.swipeRefreshLayout.setOnRefreshListener {
+            fetchTransactionDetail(orderId)
         }
     }
+
+    private fun fetchTransactionDetail(orderId: String) {
+        binding.swipeRefreshLayout.isRefreshing = true
+
+        ApiClient.instance.getTransaksiDetail(orderId)
+            .enqueue(object : Callback<TransaksiTiketResponse> {
+                override fun onResponse(
+                    call: Call<TransaksiTiketResponse>,
+                    response: Response<TransaksiTiketResponse>
+                ) {
+                    binding.swipeRefreshLayout.isRefreshing = false
+                    if (response.isSuccessful && response.body() != null) {
+                        transaksiData = response.body()!!.data
+                        transaksiData?.let {
+                            setupTransactionDetails(it)
+                        }
+                    } else {
+                        Toast.makeText(this@DetailTransaksiActivity, "Gagal memperbarui data", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<TransaksiTiketResponse>, t: Throwable) {
+                    binding.swipeRefreshLayout.isRefreshing = false
+                    Toast.makeText(this@DetailTransaksiActivity, "Kesalahan: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
+    }
+
+    private fun setupTransactionDetails(transaksiData: TransaksiData) {
+        val localeID = Locale("in", "ID")
+        val formatRupiah = NumberFormat.getCurrencyInstance(localeID)
+        formatRupiah.maximumFractionDigits = 0
+
+        // Sembunyikan tombol jika transaksi sudah dibayar
+        if (transaksiData.status.equals("dibayar", ignoreCase = true)) {
+            binding.btnBayar.visibility = View.GONE
+            binding.btnBatalkan.visibility = View.GONE
+        } else {
+            binding.btnBayar.visibility = View.VISIBLE
+            binding.btnBatalkan.visibility = View.VISIBLE
+        }
+
+        binding.tvTransactionId.text = "ID#${transaksiData.orderId}"
+        binding.tvStatus.text = transaksiData.status
+
+        when (transaksiData.status.lowercase()) {
+            "menunggu" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_pending)
+            "dibayar", "divalidasi" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_success)
+            "gagal","dibatalkan" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_failed)
+            else -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_pending)
+        }
+
+        // Atur tombol berdasarkan status
+        val isPaid = transaksiData.status.lowercase() == "dibayar"
+        binding.btnBayar.visibility = if (isPaid) View.GONE else View.VISIBLE
+        binding.btnBatalkan.visibility = if (isPaid) View.GONE else View.VISIBLE
+
+        binding.tvDate.text = transaksiData.date
+
+        val detailList = transaksiData.tiketDetails
+        val adapter = DetailTransaksiTiketAdapter(detailList) // Sesuaikan constructor-nya
+
+        // Atur layout manager dan adapter ke RecyclerView
+        binding.listItems.layoutManager = LinearLayoutManager(this)
+        binding.listItems.adapter = adapter
+
+        // Matikan scroll agar tidak bisa discroll
+        binding.listItems.isNestedScrollingEnabled = false
+
+
+        binding.tvTotalAmount.text = formatRupiah
+            .format(transaksiData.grossAmount.toLong())
+            .replace("Rp", "")
+            .trim()
+
+        binding.btnTunai.text = transaksiData.paymentType
+
+        // Tampilkan QR code hanya jika status == "dibayar"
+        if (isPaid) {
+            val qrBitmap = generateQRCode(transaksiData.orderId)
+            binding.qrImageView.setImageBitmap(qrBitmap)
+            binding.qrImageView.visibility = View.VISIBLE
+        } else {
+            binding.qrImageView.visibility = View.GONE
+        }
+    }
+
+    private fun setupPaymentButtons() {
+        binding.btnBayar.setOnClickListener {
+            transaksiData?.redirectUrl?.let { url ->
+                if (url.isNotEmpty()) {
+                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    startActivity(intent)
+                }
+            }
+        }
+
+        binding.btnBatalkan.setOnClickListener {
+            finish()
+        }
+    }
+
+    private fun generateQRCode(text: String): Bitmap {
+        val size = 512 // Ukuran QR
+        val hints = hashMapOf<EncodeHintType, Any>().apply {
+            put(EncodeHintType.MARGIN, 1)
+        }
+
+        val bitMatrix = MultiFormatWriter().encode(
+            text,
+            BarcodeFormat.QR_CODE,
+            size,
+            size,
+            hints
+        )
+
+        return Bitmap.createBitmap(size, size, Bitmap.Config.RGB_565).apply {
+            for (x in 0 until size) {
+                for (y in 0 until size) {
+                    setPixel(x, y, if (bitMatrix[x, y]) Color.BLACK else Color.WHITE)
+                }
+            }
+        }
+    }
+
 }

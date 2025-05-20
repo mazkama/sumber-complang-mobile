@@ -1,6 +1,7 @@
 package com.febrivio.sumbercomplang.model
 
 import com.google.gson.annotations.SerializedName
+import java.io.Serializable
 
 data class TransaksiTiketRequest(
     @SerializedName("metode_pembayaran") val metodePembayaran: String,
@@ -16,12 +17,29 @@ data class TransaksiTiketResponse(
     val success: Boolean,
     val message: String,
     val data: TransaksiData
-)
+) : Serializable
 
 data class TransaksiData(
-    val order_id: String,
+    @SerializedName("order_id") val orderId: String,
     val status: String,
-    val gross_amount: Int,
-    val payment_type: String,
-    val redirect_url: String
-)
+    @SerializedName("tanggal") val date: String,
+    @SerializedName("gross_amount") val grossAmount: Int,
+    @SerializedName("payment_type") val paymentType: String,
+    @SerializedName("user") val customer: Customer,
+    @SerializedName("detail_transaksi") val tiketDetails: List<TiketDetailResponse>,
+    @SerializedName("redirect_url") val redirectUrl: String? = null
+) : Serializable
+
+data class Customer(
+    @SerializedName("id_user") val idUser: Int,
+    val name: String,
+    val email: String
+) : Serializable
+
+data class TiketDetailResponse(
+    @SerializedName("id_tiket") val idTiket: Int,
+    @SerializedName("nama_tiket") val namaTiket: String,
+    @SerializedName("harga_satuan") val harga: String,
+    val jumlah: Int,
+    val subtotal: Int
+) : Serializable
