@@ -6,6 +6,7 @@
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-feature android:name="android.hardware.camera" />
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:usesCleartextTraffic="true"
@@ -67,6 +68,15 @@
         <!-- TiketActivity sebagai aktivitas utama -->
         <activity
             android:name=".TiketActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
+        </activity>
+
+        <!-- ScanTiket sebagai aktivitas utama -->
+        <activity
+            android:name=".ScanTiketActivity"
             android:exported="false"
             android:launchMode="singleTop"
             android:configChanges="orientation"

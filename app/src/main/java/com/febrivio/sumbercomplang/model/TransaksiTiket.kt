@@ -43,3 +43,8 @@ data class TiketDetailResponse(
     val jumlah: Int,
     val subtotal: Int
 ) : Serializable
+
+data class TiketValidationResponse(
+    val status: Boolean,
+    val message: String
+) : Serializable

@@ -67,11 +67,48 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent" />
 
-            <!-- Semi-transparent dark background -->
+            <!-- Semi-transparent dark background dengan cutout untuk scan area -->
+            <!-- Ganti dengan 4 view terpisah sebagai frame hitam transparansi dengan area scan transparan -->
+
+            <!-- Top dark overlay -->
             <View
                 android:layout_width="match_parent"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/scanAreaPlaceholder"
                 android:background="#99000000" />
+
+            <!-- Bottom dark overlay -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@+id/scanAreaPlaceholder"
+                android:background="#99000000" />
+
+            <!-- Left dark overlay -->
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="250dp"
+                android:layout_alignTop="@+id/scanAreaPlaceholder"
+                android:layout_alignParentStart="true"
+                android:layout_toStartOf="@+id/scanAreaPlaceholder"
+                android:background="#99000000" />
+
+            <!-- Right dark overlay -->
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="250dp"
+                android:layout_alignTop="@+id/scanAreaPlaceholder"
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@+id/scanAreaPlaceholder"
+                android:background="#99000000" />
+
+            <!-- Placeholder untuk posisi scan area -->
+            <View
+                android:id="@+id/scanAreaPlaceholder"
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:layout_centerInParent="true"
+                android:background="@android:color/transparent" />
 
             <!-- Scan Area Container -->
             <RelativeLayout
@@ -86,6 +123,17 @@
                     android:layout_height="250dp"
                     android:layout_centerInParent="true"
                     android:background="@drawable/bg_transparent_square" />
+
+                <View
+                    android:id="@+id/scanSuccessOverlay"
+                    android:layout_width="0dp"
+                    android:layout_height="0dp"
+                    android:background="#8000FF00"
+                    android:visibility="gone"
+                    app:layout_constraintBottom_toBottomOf="@id/scanArea"
+                    app:layout_constraintEnd_toEndOf="@id/scanArea"
+                    app:layout_constraintStart_toStartOf="@id/scanArea"
+                    app:layout_constraintTop_toTopOf="@id/scanArea" />
 
                 <!-- Corner Markers (WhatsApp Style) -->
                 <ImageView

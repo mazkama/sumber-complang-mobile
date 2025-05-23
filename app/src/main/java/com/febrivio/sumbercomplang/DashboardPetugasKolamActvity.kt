@@ -34,7 +34,7 @@ class DashboardPetugasKolamActvity : AppCompatActivity() {
 
 
         b.cardScan.setOnClickListener {
-            val intent = Intent(this, TransaksiTiketActivity::class.java)
+            val intent = Intent(this, ScanTiketActivity::class.java)
             startActivity(intent)
         }
 

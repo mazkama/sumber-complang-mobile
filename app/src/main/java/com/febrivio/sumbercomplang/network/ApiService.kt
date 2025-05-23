@@ -9,6 +9,7 @@ import com.febrivio.sumbercomplang.model.RegisterRequest
 import com.febrivio.sumbercomplang.model.RegisterResponse
 import com.febrivio.sumbercomplang.model.TiketRequest
 import com.febrivio.sumbercomplang.model.TiketResponse
+import com.febrivio.sumbercomplang.model.TiketValidationResponse
 import com.febrivio.sumbercomplang.model.TransaksiTiketRequest
 import com.febrivio.sumbercomplang.model.TransaksiTiketResponse
 import okhttp3.MultipartBody
@@ -91,5 +92,7 @@ interface ApiService {
     @GET("transaksi/detail/{orderId}")
     fun getTransaksiDetail(@Path("orderId") orderId: String): Call<TransaksiTiketResponse>
 
+    @GET("tiket/used/{orderId}")
+    fun validateTiket(@Path("orderId") orderId: String): Call<TiketValidationResponse>
 
 }
