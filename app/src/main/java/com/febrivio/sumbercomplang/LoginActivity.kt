@@ -1,5 +1,6 @@
 package com.febrivio.sumbercomplang
 
+import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -44,15 +45,28 @@ class LoginActivity: AppCompatActivity() {
     }
 
     fun handleSession(){
-        val intent = when (session.getUserRole()) {
-            "petugas_kolam" -> Intent(this@LoginActivity,
-                DashboardPetugasKolamActvity::class.java)
-//                                "petugas_parkir" -> Intent(this@LoginActivity, PengunjungDashboardActivity::class.java)
-//                                "pengunjung" -> Intent(this@LoginActivity, PetugasDashboardActivity::class.java)
-            else -> Intent(this@LoginActivity, DashboardPetugasParkirActivity::class.java)
+
+        when (session.getUserRole()) {
+            "petugas_kolam" -> {
+                val intent = Intent(this@LoginActivity, DashboardPetugasKolamActvity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            "petugas_parkir" -> {
+                val intent = Intent(this@LoginActivity, DashboardPetugasParkirActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            "pengunjung" -> {
+                val intent = Intent(this@LoginActivity, DashboardPelangganActivity::class.java)
+                startActivity(intent)
+                finish()
+            }
+            else -> {
+                Toast.makeText(this@LoginActivity, "Role tidak dikenali. Akses ditolak.", Toast.LENGTH_SHORT).show()
+                // Tidak ada startActivity
+            }
         }
-        startActivity(intent)
-        finish()
     }
 
     fun handleLogin() {
@@ -86,13 +100,25 @@ class LoginActivity: AppCompatActivity() {
 
                         Toast.makeText(this@LoginActivity, "Login sukses!", Toast.LENGTH_SHORT).show()
 
-                        val intent = when (res.user.role.lowercase()) {
-                            "petugas_kolam" -> Intent(this@LoginActivity, DashboardPetugasKolamActvity::class.java)
-                            "petugas_parkir" -> Intent(this@LoginActivity, DashboardPetugasParkirActivity::class.java)
-                            "pengunjung" -> Intent(this@LoginActivity,
-                                DashboardPelangganActivity::class.java)
-                            else -> Intent(this@LoginActivity, DashboardPetugasParkirActivity::class.java)
+                        when (res.user.role.lowercase()) {
+                            "petugas_kolam" -> {
+                                val intent = Intent(this@LoginActivity, DashboardPetugasKolamActvity::class.java)
+                                startActivity(intent)
+                            }
+                            "petugas_parkir" -> {
+                                val intent = Intent(this@LoginActivity, DashboardPetugasParkirActivity::class.java)
+                                startActivity(intent)
+                            }
+                            "pengunjung" -> {
+                                val intent = Intent(this@LoginActivity, DashboardPelangganActivity::class.java)
+                                startActivity(intent)
+                            }
+                            else -> {
+                                Toast.makeText(this@LoginActivity, "Role tidak dikenali. Akses ditolak.", Toast.LENGTH_SHORT).show()
+                                // Tidak ada startActivity
+                            }
                         }
+
 
                         startActivity(intent)
                         finish()

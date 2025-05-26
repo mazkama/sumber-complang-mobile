@@ -87,13 +87,13 @@ class DetailTransaksiActivity : AppCompatActivity() {
         val formatRupiah = NumberFormat.getCurrencyInstance(localeID)
         formatRupiah.maximumFractionDigits = 0
 
-        // Sembunyikan tombol jika transaksi sudah dibayar
-        if (transaksiData.status.equals("dibayar", ignoreCase = true)) {
-            binding.btnBayar.visibility = View.GONE
-            binding.btnBatalkan.visibility = View.GONE
-        } else {
+        // Atur visibilitas button setelah transaksiData siap
+        if (transaksiData.status.equals("menunggu", ignoreCase = true)) {
             binding.btnBayar.visibility = View.VISIBLE
             binding.btnBatalkan.visibility = View.VISIBLE
+        } else {
+            binding.btnBayar.visibility = View.GONE
+            binding.btnBatalkan.visibility = View.GONE
         }
 
         binding.tvTransactionId.text = "ID#${transaksiData.orderId}"
@@ -108,8 +108,6 @@ class DetailTransaksiActivity : AppCompatActivity() {
 
         // Atur tombol berdasarkan status
         val isPaid = transaksiData.status.lowercase() == "dibayar"
-        binding.btnBayar.visibility = if (isPaid) View.GONE else View.VISIBLE
-        binding.btnBatalkan.visibility = if (isPaid) View.GONE else View.VISIBLE
 
         binding.tvDate.text = transaksiData.date
 

@@ -259,7 +259,7 @@ class ScanTiketActivity : AppCompatActivity() {
                         val validationResponse = response.body()
                         if (validationResponse != null && validationResponse.status) {
                             // Validasi berhasil
-                            showErrorDialog("Sukses", "Tiket berhasil divalidasi")
+                            showSuccessDialog("Sukses", "Tiket berhasil divalidasi")
                             
                             // Return result ke activity sebelumnya
                             val intent = Intent()
@@ -382,6 +382,40 @@ class ScanTiketActivity : AppCompatActivity() {
             dialog.show()
         } catch (e: Exception) {
             Log.e(TAG, "Error showing error dialog", e)
+            // If custom dialog fails, fall back to simple Toast
+            try {
+                Toast.makeText(this, "$title: $message", Toast.LENGTH_LONG).show()
+            } catch (e2: Exception) {
+                Log.e(TAG, "Even Toast failed", e2)
+            }
+        }
+    }
+
+
+    private fun showSuccessDialog(title: String, message: String) {
+        try {
+            val builder = AlertDialog.Builder(this)
+            val inflater = LayoutInflater.from(this)
+            val dialogView = inflater.inflate(R.layout.dialog_success, null)
+
+            val dialog = builder.setView(dialogView).create()
+
+            // Set dialog properties
+            dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
+            dialog.window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
+
+            // Set title and message
+            dialogView.findViewById<android.widget.TextView>(R.id.dialogTitleSuccess).text = title
+            dialogView.findViewById<android.widget.TextView>(R.id.dialogMessageSuccess).text = message
+
+            // Set OK button action
+            dialogView.findViewById<android.widget.Button>(R.id.dialogButtonOkSuccess).setOnClickListener {
+                dialog.dismiss()
+            }
+
+            dialog.show()
+        } catch (e: Exception) {
+            Log.e(TAG, "Success showing success dialog", e)
             // If custom dialog fails, fall back to simple Toast
             try {
                 Toast.makeText(this, "$title: $message", Toast.LENGTH_LONG).show()
