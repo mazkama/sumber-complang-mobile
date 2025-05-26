@@ -229,7 +229,6 @@ class ScanTiketActivity : AppCompatActivity() {
             if (allPermissionsGranted()) {
                 startCamera()
             } else {
-                Toast.makeText(this, "Permissions not granted by the user.", Toast.LENGTH_SHORT).show()
                 finish()
             }
         }
@@ -257,8 +256,19 @@ class ScanTiketActivity : AppCompatActivity() {
                     
                     if (response.isSuccessful) {
                         val validationResponse = response.body()
-                        if (validationResponse != null && validationResponse.status) {
-                            // Validasi berhasil
+                        
+                        // Debug log untuk melihat response
+                        Log.d(TAG, "Response status: ${validationResponse?.status}")
+                        Log.d(TAG, "Response message: ${validationResponse?.message}")
+                        
+                        // Cek apakah pesan mengandung kata "berhasil" sebagai indikator sukses
+                        val message = validationResponse?.message ?: ""
+                        val isSuccess = validationResponse?.status == true || 
+                                       message.contains("berhasil", ignoreCase = true) ||
+                                       message.contains("divalidasi", ignoreCase = true)
+                        
+                        if (isSuccess) {
+                            // Validasi berhasil - gunakan showSuccessDialog
                             showSuccessDialog("Sukses", "Tiket berhasil divalidasi")
                             
                             // Return result ke activity sebelumnya
@@ -391,7 +401,6 @@ class ScanTiketActivity : AppCompatActivity() {
         }
     }
 
-
     private fun showSuccessDialog(title: String, message: String) {
         try {
             val builder = AlertDialog.Builder(this)
@@ -404,18 +413,18 @@ class ScanTiketActivity : AppCompatActivity() {
             dialog.requestWindowFeature(Window.FEATURE_NO_TITLE)
             dialog.window?.setBackgroundDrawable(ColorDrawable(android.graphics.Color.TRANSPARENT))
 
-            // Set title and message
+            // Set title and message - menggunakan ID yang benar dari dialog_success.xml
             dialogView.findViewById<android.widget.TextView>(R.id.dialogTitleSuccess).text = title
             dialogView.findViewById<android.widget.TextView>(R.id.dialogMessageSuccess).text = message
 
-            // Set OK button action
+            // Set OK button action - menggunakan ID yang benar dari dialog_success.xml
             dialogView.findViewById<android.widget.Button>(R.id.dialogButtonOkSuccess).setOnClickListener {
                 dialog.dismiss()
             }
 
             dialog.show()
         } catch (e: Exception) {
-            Log.e(TAG, "Success showing success dialog", e)
+            Log.e(TAG, "Error showing success dialog", e)
             // If custom dialog fails, fall back to simple Toast
             try {
                 Toast.makeText(this, "$title: $message", Toast.LENGTH_LONG).show()
@@ -445,8 +454,7 @@ class ScanTiketActivity : AppCompatActivity() {
             dialog.show()
         } catch (e: Exception) {
             Log.e(TAG, "Error showing ticket already validated dialog", e)
-            // Fallback to simple error dialog if custom dialog fails
-            showErrorDialog("Tiket Sudah Divalidasi", "Tiket sudah divalidasi sebelumnya.")
+            // Fallback tanpa Toast, langsung log saja
         }
     }
     
