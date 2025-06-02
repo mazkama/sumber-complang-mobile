@@ -1,13 +1,10 @@
 package com.febrivio.sumbercomplang
 
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import androidx.appcompat.app.AppCompatDelegate
 import com.febrivio.sumbercomplang.databinding.LoginActivityBinding
 import com.febrivio.sumbercomplang.model.LoginRequest
 import com.febrivio.sumbercomplang.model.LoginResponse
@@ -27,46 +24,18 @@ class LoginActivity: AppCompatActivity() {
         b = LoginActivityBinding.inflate(layoutInflater)
         setContentView(b.root)
 
+        // Inisialisasi sessoin
+        session = SessionManager(this)
+
         b.tvRegister.setOnClickListener{
             val intent = Intent(this, RegisterActivity::class.java)
             startActivity(intent)
-        }
-
-        session = SessionManager(this)
-
-        if(session.isLoggedIn()){
-            handleSession()
         }
 
         b.btnLogin.setOnClickListener {
             handleLogin()
         }
 
-    }
-
-    fun handleSession(){
-
-        when (session.getUserRole()) {
-            "petugas_kolam" -> {
-                val intent = Intent(this@LoginActivity, DashboardPetugasKolamActvity::class.java)
-                startActivity(intent)
-                finish()
-            }
-            "petugas_parkir" -> {
-                val intent = Intent(this@LoginActivity, DashboardPetugasParkirActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
-            "pengunjung" -> {
-                val intent = Intent(this@LoginActivity, DashboardPelangganActivity::class.java)
-                startActivity(intent)
-                finish()
-            }
-            else -> {
-                Toast.makeText(this@LoginActivity, "Role tidak dikenali. Akses ditolak.", Toast.LENGTH_SHORT).show()
-                // Tidak ada startActivity
-            }
-        }
     }
 
     fun handleLogin() {
@@ -100,28 +69,19 @@ class LoginActivity: AppCompatActivity() {
 
                         Toast.makeText(this@LoginActivity, "Login sukses!", Toast.LENGTH_SHORT).show()
 
-                        when (res.user.role.lowercase()) {
-                            "petugas_kolam" -> {
-                                val intent = Intent(this@LoginActivity, DashboardPetugasKolamActvity::class.java)
-                                startActivity(intent)
-                            }
-                            "petugas_parkir" -> {
-                                val intent = Intent(this@LoginActivity, DashboardPetugasParkirActivity::class.java)
-                                startActivity(intent)
-                            }
-                            "pengunjung" -> {
-                                val intent = Intent(this@LoginActivity, DashboardPelangganActivity::class.java)
-                                startActivity(intent)
-                            }
+                        val role = res.user.role.lowercase()
+                        val intent = when (role) {
+                            "petugas_kolam", "petugas_parkir", "pengunjung" -> Intent(this@LoginActivity, MainActivity::class.java)
                             else -> {
-                                Toast.makeText(this@LoginActivity, "Role tidak dikenali. Akses ditolak.", Toast.LENGTH_SHORT).show()
-                                // Tidak ada startActivity
+                                showToast("Gagal login, role tidak tersedia")
+                                return
                             }
                         }
+                        startActivityWithAnimation(intent)
 
 
-                        startActivity(intent)
-                        finish()
+
+                        startActivityWithAnimation(intent)
                     } else {
                         Toast.makeText(this@LoginActivity, res?.message ?: "Gagal login", Toast.LENGTH_SHORT).show()
                     }
@@ -145,6 +105,16 @@ class LoginActivity: AppCompatActivity() {
                 Toast.makeText(this@LoginActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun startActivityWithAnimation(intent: Intent) {
+        startActivity(intent)
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
+        finish()
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 
     private fun isValidInput(email: String, password: String): Boolean {

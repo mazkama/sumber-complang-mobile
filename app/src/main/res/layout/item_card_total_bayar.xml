@@ -7,94 +7,11 @@
     android:orientation="vertical"
     android:padding="10dp">
 
-    <!-- Tambahkan TextView Ringkasan Pembayaran -->
-
-    <!-- CardView yang sudah ada -->
-<!--    <androidx.cardview.widget.CardView-->
-<!--        android:layout_width="match_parent"-->
-<!--        android:layout_height="130dp"-->
-<!--        android:layout_margin="0dp"-->
-<!--        android:background="@color/white"-->
-<!--        app:cardBackgroundColor="@android:color/white"-->
-<!--        app:cardElevation="30dp"-->
-<!--        app:cardPreventCornerOverlap="false">-->
-
-<!--        <androidx.constraintlayout.widget.ConstraintLayout-->
-<!--            android:layout_width="match_parent"-->
-<!--            android:layout_height="match_parent"-->
-<!--            android:background="@color/white"-->
-<!--            android:padding="16dp">-->
-
-<!--            &lt;!&ndash; Judul: Metode Pembayaran &ndash;&gt;-->
-<!--            <TextView-->
-<!--                android:id="@+id/tvMetodePembayaran"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginTop="10dp"-->
-<!--                android:text="Pilih Metode Pembayaran"-->
-<!--                android:textColor="#A0A0A0"-->
-<!--                android:textSize="18sp"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--            &lt;!&ndash; Tombol Tunai &ndash;&gt;-->
-<!--            <Button-->
-<!--                android:id="@+id/btnMetodePembayaran"-->
-<!--                android:layout_width="120dp"-->
-<!--                android:layout_height="50dp"-->
-<!--                android:layout_marginTop="-5dp"-->
-<!--                android:backgroundTint="@color/blue"-->
-<!--                android:paddingLeft="20dp"-->
-<!--                android:paddingRight="20dp"-->
-<!--                android:text="Tunai"-->
-<!--                android:textColor="#FFFFFF"-->
-<!--                android:textSize="14sp"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintTop_toTopOf="parent" />-->
-
-<!--            &lt;!&ndash; Garis Pemisah &ndash;&gt;-->
-<!--            <View-->
-<!--                android:id="@+id/separator"-->
-<!--                android:layout_width="0dp"-->
-<!--                android:layout_height="1dp"-->
-<!--                android:layout_marginTop="20dp"-->
-<!--                android:background="#E0E0E0"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@+id/tvMetodePembayaran" />-->
-
-<!--            &lt;!&ndash; Label Total Bayar &ndash;&gt;-->
-<!--            <TextView-->
-<!--                android:id="@+id/tvTotalLabel"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginTop="15dp"-->
-<!--                android:text="Total Bayar"-->
-<!--                android:textSize="20sp"-->
-<!--                android:textStyle="bold"-->
-<!--                app:layout_constraintStart_toStartOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/separator" />-->
-
-<!--            &lt;!&ndash; Nominal Total &ndash;&gt;-->
-<!--            <TextView-->
-<!--                android:id="@+id/tvTotalNominal"-->
-<!--                android:layout_width="wrap_content"-->
-<!--                android:layout_height="wrap_content"-->
-<!--                android:layout_marginEnd="10dp"-->
-<!--                android:text="45.000"-->
-<!--                android:textSize="20sp"-->
-<!--                android:textStyle="bold"-->
-<!--                app:layout_constraintBaseline_toBaselineOf="@id/tvTotalLabel"-->
-<!--                app:layout_constraintEnd_toEndOf="parent"-->
-<!--                app:layout_constraintTop_toBottomOf="@id/separator" />-->
-
-<!--        </androidx.constraintlayout.widget.ConstraintLayout>-->
-<!--    </androidx.cardview.widget.CardView>-->
-
     <!-- Payment Summary -->
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:backgroundTint="@color/white"
         android:layout_marginBottom="16dp"
         app:cardCornerRadius="15dp"
         app:cardElevation="4dp">

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F5F5F5">
+
+    <!-- Header -->
+    <LinearLayout
+        android:id="@+id/headerLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/blue"
+        android:orientation="vertical"
+        android:padding="24dp"
+        app:layout_constraintTop_toTopOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Riwayat Transaksi"
+            android:textColor="@android:color/white"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Data riwayat transaksi yang pernah dilakukan"
+            android:textColor="@android:color/white"
+            android:textSize="14sp" />
+
+        <!-- Filter Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:weightSum="3">
+
+            <TextView
+                android:id="@+id/btnSemua"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_filter_button"
+                android:gravity="center"
+                android:text="Semua"
+                android:textColor="@color/text_filter_selector"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:padding="8dp" />
+
+            <TextView
+                android:id="@+id/btnKolam"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:layout_marginEnd="8dp"
+                android:background="@drawable/bg_filter_button"
+                android:gravity="center"
+                android:text="Kolam"
+                android:textColor="@color/text_filter_selector"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:padding="8dp" />
+
+            <TextView
+                android:id="@+id/btnParkir"
+                android:layout_width="0dp"
+                android:layout_height="40dp"
+                android:layout_weight="1"
+                android:background="@drawable/bg_filter_button"
+                android:gravity="center"
+                android:text="Parkir"
+                android:textColor="@color/text_filter_selector"
+                android:textSize="14sp"
+                android:textStyle="bold"
+                android:padding="8dp" />
+        </LinearLayout>
+    </LinearLayout>
+
+    <!-- Swipe to Refresh -->
+    <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+        android:id="@+id/swipeRefresh"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        app:layout_constraintTop_toBottomOf="@id/headerLayout"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <!-- RecyclerView -->
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/rvTransaksi"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:padding="16dp"
+                android:scrollbars="vertical" />
+
+            <!-- TextView data kosong -->
+            <TextView
+                android:id="@+id/tvDataNon"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tidak ada data transaksi"
+                android:textColor="#777"
+                android:textSize="16sp"
+                android:visibility="gone"
+                android:layout_centerInParent="true" />
+
+            <!-- ProgressBar Loading -->
+            <ProgressBar
+                android:id="@+id/progressBar"
+                style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:visibility="gone" />
+        </RelativeLayout>
+    </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

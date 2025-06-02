@@ -108,6 +108,7 @@
                     android:layout_width="0dp"
                     android:layout_height="80dp"
                     android:layout_marginEnd="8dp"
+                    android:backgroundTint="@color/white"
                     android:layout_weight="1"
                     app:cardCornerRadius="8dp"
                     app:cardElevation="2dp">
@@ -138,6 +139,7 @@
                     android:id="@+id/cardTiketKolam"
                     android:layout_width="0dp"
                     android:layout_height="80dp"
+                    android:backgroundTint="@color/white"
                     android:layout_marginStart="4dp"
                     android:layout_marginEnd="4dp"
                     android:layout_weight="1"
@@ -170,6 +172,7 @@
                     android:id="@+id/cardPengaturan"
                     android:layout_width="0dp"
                     android:layout_height="80dp"
+                    android:backgroundTint="@color/white"
                     android:layout_marginStart="8dp"
                     android:layout_weight="1"
                     app:cardCornerRadius="8dp"

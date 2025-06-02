@@ -5,6 +5,7 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -106,9 +107,6 @@ class DetailTransaksiActivity : AppCompatActivity() {
             else -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_pending)
         }
 
-        // Atur tombol berdasarkan status
-        val isPaid = transaksiData.status.lowercase() == "dibayar"
-
         binding.tvDate.text = transaksiData.date
 
         val detailList = transaksiData.tiketDetails
@@ -130,12 +128,34 @@ class DetailTransaksiActivity : AppCompatActivity() {
         binding.btnTunai.text = transaksiData.paymentType
 
         // Tampilkan QR code hanya jika status == "dibayar"
-        if (isPaid) {
-            val qrBitmap = generateQRCode(transaksiData.orderId)
-            binding.qrImageView.setImageBitmap(qrBitmap)
-            binding.qrImageView.visibility = View.VISIBLE
-        } else {
-            binding.qrImageView.visibility = View.GONE
+        val status = transaksiData.status.lowercase()
+        val inflater = LayoutInflater.from(this)
+
+        when (status) {
+            "dibayar" -> {
+                val qrBitmap = generateQRCode(transaksiData.orderId)
+                binding.qrImageView.setImageBitmap(qrBitmap)
+                binding.qrImageView.visibility = View.VISIBLE
+
+                binding.stempelContainer.removeAllViews()
+                binding.stempelContainer.visibility = View.GONE
+            }
+
+            "divalidasi" -> {
+                binding.qrImageView.visibility = View.GONE
+
+                // Inflate layout stempel dan tambahkan ke container
+                val stempelView = inflater.inflate(R.layout.stempel_sudah_digunakan, binding.stempelContainer, false)
+                binding.stempelContainer.removeAllViews()
+                binding.stempelContainer.addView(stempelView)
+                binding.stempelContainer.visibility = View.VISIBLE
+            }
+
+            else -> {
+                binding.qrImageView.visibility = View.GONE
+                binding.stempelContainer.removeAllViews()
+                binding.stempelContainer.visibility = View.GONE
+            }
         }
     }
 

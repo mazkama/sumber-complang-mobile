@@ -1,32 +1,120 @@
 package com.febrivio.sumbercomplang
 
-import android.content.Intent
+import android.graphics.Color
 import android.os.Bundle
+import android.view.MenuItem
+import android.view.View
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.febrivio.sumbercomplang.databinding.FragmentBerandaPetugasKolamBinding
+import androidx.fragment.app.FragmentTransaction
+import com.febrivio.sumbercomplang.databinding.ActivityMainBinding
+import com.febrivio.sumbercomplang.databinding.FragmentRiwayatTransaksiBinding
+import com.febrivio.sumbercomplang.fragment.dashboard.FragmentDashboardPengunjung
+import com.febrivio.sumbercomplang.fragment.dashboard.FragmentDashboardPetugasKolam
+import com.febrivio.sumbercomplang.fragment.dashboard.FragmentDashboardPetugasParkir
+import com.febrivio.sumbercomplang.fragment.riwayat.FragmentRiwayatTransaksi
+import com.febrivio.sumbercomplang.services.SessionManager
+import com.google.android.material.navigation.NavigationBarView
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListener {
 
-    lateinit var b: FragmentBerandaPetugasKolamBinding
+    lateinit var b: ActivityMainBinding
+    private lateinit var session: SessionManager
+
+    lateinit var fDashboardPelanggan: FragmentDashboardPengunjung
+    lateinit var fBerandaPetugasKolam: FragmentDashboardPetugasKolam
+    lateinit var fBerandaPetugasParkir: FragmentDashboardPetugasParkir
+    lateinit var fRiwayatTransaksi: FragmentRiwayatTransaksi
+    lateinit var ft : FragmentTransaction
+    lateinit var role : String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        b = FragmentBerandaPetugasKolamBinding.inflate(layoutInflater)
+        b = ActivityMainBinding.inflate(layoutInflater)
         setContentView(b.root)
 
-        b.cardKolam.setOnClickListener {
-            val intent = Intent(this, KolamActivity::class.java)
-            startActivity(intent)
+        // Inisialisasi sessoin
+        session = SessionManager(this)
+        role = session.getUserRole().toString()
+
+        b.bottomNavigationView.setOnItemSelectedListener(this)
+
+        fDashboardPelanggan = FragmentDashboardPengunjung()
+        fBerandaPetugasKolam = FragmentDashboardPetugasKolam()
+        fBerandaPetugasParkir = FragmentDashboardPetugasParkir()
+        fRiwayatTransaksi = FragmentRiwayatTransaksi()
+
+        b.bottomNavigationView.setSelectedItemId(R.id.nav_dashboard)
+
+        ft = supportFragmentManager.beginTransaction()
+
+        // Tentukan fragment yang akan ditampilkan berdasarkan role
+        val selectedFragment = when (role.lowercase()) {
+            "pengunjung" -> fDashboardPelanggan
+            "petugas_kolam" -> fBerandaPetugasKolam
+            "petugas_parkir" -> fBerandaPetugasParkir
+            else -> {
+                showToast("Role tidak dikenali")
+                return
+            }
         }
 
-        b.cardTiket.setOnClickListener {
-            val intent = Intent(this, TiketActivity::class.java)
-            startActivity(intent)
-        }
+        // Tampilkan fragment
+        supportFragmentManager.beginTransaction()
+            .replace(R.id.frameLayout, selectedFragment)
+            .commit()
 
-        b.cardScan.setOnClickListener {
-            val intent = Intent(this, TransaksiTiketActivity::class.java)
-            startActivity(intent)
+        // Tampilkan background putih dan buat layout terlihat
+        b.frameLayout.setBackgroundColor(Color.WHITE)
+        b.frameLayout.visibility = View.VISIBLE
+
+    }
+
+    override fun onNavigationItemSelected(item: MenuItem): Boolean {
+        when(item.itemId){
+            R.id.nav_dashboard -> {
+                // Tentukan fragment yang akan ditampilkan berdasarkan role
+                val selectedFragment = when (role.lowercase()) {
+                    "pengunjung" -> fDashboardPelanggan
+                    "petugas_kolam" -> fBerandaPetugasKolam
+                    "petugas_parkir" -> fBerandaPetugasParkir
+                    else -> {
+                        showToast("Role tidak dikenali")
+                        return false
+                    }
+                }
+
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.frameLayout, selectedFragment)
+                    .commit()
+
+                b.frameLayout.setBackgroundColor(Color.WHITE)
+                b.frameLayout.visibility = View.VISIBLE
+            }
+            R.id.nav_history -> {
+                // Tentukan fragment yang akan ditampilkan berdasarkan role
+                val selectedFragment = when (role.lowercase()) {
+                    "pengunjung" -> fRiwayatTransaksi
+                    "petugas_kolam" -> fRiwayatTransaksi
+                    "petugas_parkir" -> fRiwayatTransaksi
+                    else -> {
+                        showToast("Role tidak dikenali")
+                        return false
+                    }
+                }
+
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.frameLayout, selectedFragment)
+                    .commit()
+
+                b.frameLayout.setBackgroundColor(Color.WHITE)
+                b.frameLayout.visibility = View.VISIBLE
+            }
         }
+        return true
+    }
+
+    private fun showToast(message: String) {
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show()
     }
 }

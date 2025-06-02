@@ -7,6 +7,7 @@ import com.febrivio.sumbercomplang.model.LoginRequest
 import com.febrivio.sumbercomplang.model.LoginResponse
 import com.febrivio.sumbercomplang.model.RegisterRequest
 import com.febrivio.sumbercomplang.model.RegisterResponse
+import com.febrivio.sumbercomplang.model.RiwayatTransaksiTiketResponse
 import com.febrivio.sumbercomplang.model.TiketRequest
 import com.febrivio.sumbercomplang.model.TiketResponse
 import com.febrivio.sumbercomplang.model.TiketValidationResponse
@@ -88,6 +89,12 @@ interface ApiService {
 
     @POST("transaksi-tiket")
     fun createTransaksiTiket(@Body body: TransaksiTiketRequest): Call<TransaksiTiketResponse>
+
+    @GET("transaksi-tiket")
+    fun getRiwayatTransaksi(
+        @Query("jenis") jenis: String,
+        @Query("page") page: Int,
+    ): Call<RiwayatTransaksiTiketResponse>
 
     @GET("transaksi/detail/{orderId}")
     fun getTransaksiDetail(@Path("orderId") orderId: String): Call<TransaksiTiketResponse>

@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="#f5f5f5f5"
     android:backgroundTintMode="add"
     android:fillViewport="true">
 
@@ -82,6 +83,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_margin="16dp"
+                            android:backgroundTint="@color/white"
                             app:cardCornerRadius="8dp"
                             app:cardElevation="4dp">
 
@@ -157,8 +159,16 @@
                                     android:layout_width="200dp"
                                     android:layout_height="200dp"
                                     android:layout_gravity="center"
-                                    android:layout_marginBottom="24dp"
+                                    android:layout_marginTop="25dp"
+                                    android:layout_marginBottom="25dp"
                                     android:visibility="gone" />
+
+                                <FrameLayout
+                                    android:id="@+id/stempelContainer"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_gravity="center" />
+
 
                             </LinearLayout>
                         </androidx.cardview.widget.CardView>
@@ -168,6 +178,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:layout_marginHorizontal="16dp"
+                            android:backgroundTint="@color/white"
                             android:layout_marginBottom="16dp"
                             app:cardCornerRadius="8dp"
                             app:cardElevation="4dp">
@@ -268,7 +279,8 @@
         android:id="@+id/frameLayout2"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#f5f5f5f5"
+        android:background="#F3F3F3"
+        android:backgroundTint="#F3F3F3"
         android:orientation="vertical"
         android:padding="16dp"
         app:layout_constraintBottom_toBottomOf="parent">
