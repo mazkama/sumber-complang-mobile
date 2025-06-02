@@ -99,6 +99,10 @@ interface ApiService {
     @GET("transaksi/detail/{orderId}")
     fun getTransaksiDetail(@Path("orderId") orderId: String): Call<TransaksiTiketResponse>
 
+    @POST("transaksi/{orderId}/cancel")
+    fun cancelTransaction(@Path("orderId") orderId: String): Call<ResponseBody>
+
+
     @GET("tiket/used/{orderId}")
     fun validateTiket(@Path("orderId") orderId: String): Call<TiketValidationResponse>
 

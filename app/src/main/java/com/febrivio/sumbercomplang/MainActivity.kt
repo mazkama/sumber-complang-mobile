@@ -95,10 +95,7 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
                 // Tentukan fragment yang akan ditampilkan berdasarkan role
                 val selectedFragment = when (role.lowercase()) {
                     "pengunjung" -> fRiwayatTransaksi
-                    "petugas_kolam" -> fRiwayatTransaksi
-                    "petugas_parkir" -> fRiwayatTransaksi
                     else -> {
-                        showToast("Role tidak dikenali")
                         return false
                     }
                 }

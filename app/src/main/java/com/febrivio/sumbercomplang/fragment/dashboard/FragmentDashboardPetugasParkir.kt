@@ -8,6 +8,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import com.febrivio.sumbercomplang.LoginActivity
 import com.febrivio.sumbercomplang.MainActivity
+import com.febrivio.sumbercomplang.ScanTiketActivity
 import com.febrivio.sumbercomplang.TiketActivity
 import com.febrivio.sumbercomplang.TransaksiTiketActivity
 import com.febrivio.sumbercomplang.databinding.FragmentBerandaPetugasParkirBinding
@@ -43,7 +44,7 @@ class FragmentDashboardPetugasParkir :  Fragment() {
         }
 
         b.cardScan.setOnClickListener {
-            val intent = Intent(thisParent, TransaksiTiketActivity::class.java)
+            val intent = Intent(thisParent, ScanTiketActivity::class.java)
             startActivity(intent)
         }
 

@@ -18,6 +18,8 @@ import com.febrivio.sumbercomplang.network.ApiClient
 import com.google.zxing.BarcodeFormat
 import com.google.zxing.EncodeHintType
 import com.google.zxing.MultiFormatWriter
+import okhttp3.ResponseBody
+import org.json.JSONObject
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -170,8 +172,78 @@ class DetailTransaksiActivity : AppCompatActivity() {
         }
 
         binding.btnBatalkan.setOnClickListener {
-            finish()
+            showCancelConfirmationDialog()
         }
+    }
+
+    private fun showCancelConfirmationDialog() {
+        androidx.appcompat.app.AlertDialog.Builder(this)
+            .setTitle("Batalkan Transaksi")
+            .setMessage("Apakah Anda yakin ingin membatalkan transaksi ini?")
+            .setPositiveButton("Ya") { _, _ ->
+                cancelTransaction()
+            }
+            .setNegativeButton("Tidak", null)
+            .show()
+    }
+
+    private fun cancelTransaction() {
+        binding.btnBatalkan.isEnabled = false
+
+        ApiClient.instance.cancelTransaction(orderId)
+            .enqueue(object : Callback<ResponseBody> {
+                override fun onResponse(
+                    call: Call<ResponseBody>,
+                    response: Response<ResponseBody>
+                ) {
+                    binding.btnBatalkan.isEnabled = true
+
+                    if (response.isSuccessful) {
+                        try {
+                            val jsonResponse = JSONObject(response.body()?.string() ?: "")
+                            val success = jsonResponse.optBoolean("success", false)
+                            val message = jsonResponse.optString("message", "")
+
+                            if (success) {
+                                Toast.makeText(
+                                    this@DetailTransaksiActivity,
+                                    "Transaksi berhasil dibatalkan",
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                                // Refresh data to show updated status
+                                fetchTransactionDetail(orderId)
+                            } else {
+                                Toast.makeText(
+                                    this@DetailTransaksiActivity,
+                                    message.ifEmpty { "Gagal membatalkan transaksi" },
+                                    Toast.LENGTH_SHORT
+                                ).show()
+                            }
+                        } catch (e: Exception) {
+                            Toast.makeText(
+                                this@DetailTransaksiActivity,
+                                "Gagal memproses response",
+                                Toast.LENGTH_SHORT
+                            ).show()
+                        }
+                    } else {
+                        Toast.makeText(
+                            this@DetailTransaksiActivity,
+                            "Gagal membatalkan transaksi",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) { 
+                    binding.btnBatalkan.isEnabled = true
+                    Toast.makeText(
+                        this@DetailTransaksiActivity,
+                        "Error: ${t.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
     }
 
     private fun generateQRCode(text: String): Bitmap {

@@ -1,18 +1,22 @@
 package com.febrivio.sumbercomplang.fragment.riwayat
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
+import com.febrivio.sumbercomplang.DetailTransaksiActivity
 import com.febrivio.sumbercomplang.MainActivity
 import com.febrivio.sumbercomplang.adapter.RiwayatTransaksiAdapter
 import com.febrivio.sumbercomplang.databinding.FragmentRiwayatTransaksiBinding
 import com.febrivio.sumbercomplang.model.RiwayatTransaksiItem
 import com.febrivio.sumbercomplang.model.RiwayatTransaksiTiketResponse
+import com.febrivio.sumbercomplang.model.TransaksiTiketResponse
 import com.febrivio.sumbercomplang.network.ApiClient
 import com.febrivio.sumbercomplang.network.ApiClient.ApiServiceAuth
 import com.febrivio.sumbercomplang.services.SessionManager
@@ -59,8 +63,9 @@ class FragmentRiwayatTransaksi : Fragment() {
     }
 
     private fun setupRecyclerView() {
-        riwayatTransaksiAdapter = RiwayatTransaksiAdapter(riwayatTransaksiList) { RiwayatTransaksiData ->
-            // Aksi saat item diklik
+        riwayatTransaksiAdapter = RiwayatTransaksiAdapter(riwayatTransaksiList) { item ->
+            // Handle item click by fetching details
+            fetchTransactionDetail(item.order_id)
         }
         with(b.rvTransaksi) {
             layoutManager = LinearLayoutManager(thisParent)
@@ -150,6 +155,40 @@ class FragmentRiwayatTransaksi : Fragment() {
                 if (currentPage == 1) b.tvDataNon.visibility = View.VISIBLE
             }
         })
+    }
+
+    private fun fetchTransactionDetail(orderId: String) {
+        b.swipeRefresh.isRefreshing = true
+        val token = session.getToken()
+
+        ApiServiceAuth(thisParent, token).getTransaksiDetail(orderId)
+            .enqueue(object : Callback<TransaksiTiketResponse> {
+                override fun onResponse(
+                    call: Call<TransaksiTiketResponse>,
+                    response: Response<TransaksiTiketResponse>
+                ) {
+                    b.swipeRefresh.isRefreshing = false
+                    if (response.isSuccessful && response.body() != null) {
+                        response.body()?.let { transaksiResponse ->
+                            if (transaksiResponse.success) {
+                                // Navigate to detail activity
+                                val intent = Intent(requireContext(), DetailTransaksiActivity::class.java)
+                                intent.putExtra("transaksi", transaksiResponse.data)
+                                startActivity(intent)
+                            } else {
+                                Toast.makeText(requireContext(), "Gagal memuat detail transaksi", Toast.LENGTH_SHORT).show()
+                            }
+                        }
+                    } else {
+                        Toast.makeText(requireContext(), "Gagal memperbarui data", Toast.LENGTH_SHORT).show()
+                    }
+                }
+
+                override fun onFailure(call: Call<TransaksiTiketResponse>, t: Throwable) {
+                    b.swipeRefresh.isRefreshing = false
+                    Toast.makeText(requireContext(), "Kesalahan: ${t.message}", Toast.LENGTH_SHORT).show()
+                }
+            })
     }
 
     private fun refreshData() {
