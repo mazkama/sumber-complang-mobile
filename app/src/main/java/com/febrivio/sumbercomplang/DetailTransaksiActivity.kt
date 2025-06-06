@@ -235,7 +235,7 @@ class DetailTransaksiActivity : AppCompatActivity() {
                     }
                 }
 
-                override fun onFailure(call: Call<ResponseBody>, t: Throwable) { 
+                override fun onFailure(call: Call<ResponseBody>, t: Throwable) {
                     binding.btnBatalkan.isEnabled = true
                     Toast.makeText(
                         this@DetailTransaksiActivity,
