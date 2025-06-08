@@ -1,5 +1,6 @@
 package com.febrivio.sumbercomplang.fragment
 
+import android.app.AlertDialog
 import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -10,7 +11,13 @@ import androidx.fragment.app.Fragment
 import com.febrivio.sumbercomplang.LoginActivity
 import com.febrivio.sumbercomplang.MainActivity
 import com.febrivio.sumbercomplang.databinding.FragmentProfilBinding
+import com.febrivio.sumbercomplang.model.ProfileUpdateRequest
+import com.febrivio.sumbercomplang.model.ProfileUpdateResponse
+import com.febrivio.sumbercomplang.network.ApiClient.ApiServiceAuth
 import com.febrivio.sumbercomplang.services.SessionManager
+import retrofit2.Call
+import retrofit2.Callback
+import retrofit2.Response
 
 class FragmentProfil : Fragment() {
 
@@ -48,10 +55,24 @@ class FragmentProfil : Fragment() {
     private fun setupClickListeners() {
         // Logout button
         b.btnLogout.setOnClickListener {
-            session.logout()
-            val intent = Intent(thisParent, LoginActivity::class.java)
-            startActivity(intent)
-            thisParent.finish()
+
+        }
+
+        b.btnLogout.setOnClickListener {
+            AlertDialog.Builder(requireContext())
+                .setTitle("Konfirmasi Logout")
+                .setMessage("Apakah Anda yakin ingin logout?")
+                .setPositiveButton("Logout") { dialog, _ ->
+                    session.logout()
+                    dialog.dismiss()
+                    val intent = Intent(thisParent, LoginActivity::class.java)
+                    startActivity(intent)
+                    thisParent.finish()
+                }
+                .setNegativeButton("Batal") { dialog, _ ->
+                    dialog.dismiss()
+                }
+                .show()
         }
 
         // Edit Profile button
@@ -115,19 +136,60 @@ class FragmentProfil : Fragment() {
             return
         }
 
-        // Update session data
-        session.saveUserName(newName)
-        session.saveUserEmail(newEmail)
+        // Show loading indicator
+        b.progressBar.visibility = View.VISIBLE
+        b.btnSaveChanges.isEnabled = false
+        b.btnCancel.isEnabled = false
 
-        // Update UI
-        b.tvName.text = newName
-        b.tvEmail.text = newEmail
+        // Create the request
+        val profileUpdateRequest = ProfileUpdateRequest(newName, newEmail)
 
-        // Exit edit mode
-        toggleEditMode()
+        // Mendapatkan token dari SessionManager
+        val token = SessionManager(thisParent).getToken()
 
-        // Show success message
-        Toast.makeText(thisParent, "Profil berhasil diperbarui", Toast.LENGTH_SHORT).show()
+        // Make the API call
+        val apiService = ApiServiceAuth(thisParent, token)
+
+        apiService.updateProfile(profileUpdateRequest).enqueue(object : Callback<ProfileUpdateResponse> {
+            override fun onResponse(call: Call<ProfileUpdateResponse>, response: Response<ProfileUpdateResponse>) {
+                // Hide loading indicator
+                b.progressBar.visibility = View.GONE
+                b.btnSaveChanges.isEnabled = true
+                b.btnCancel.isEnabled = true
+
+                if (response.isSuccessful && response.body()?.status == true) {
+                    // Update was successful
+
+                    // Update session data
+                    session.saveUserName(newName)
+                    session.saveUserEmail(newEmail)
+
+                    // Update UI
+                    b.tvName.text = newName
+                    b.tvEmail.text = newEmail
+
+                    // Exit edit mode
+                    toggleEditMode()
+
+                    // Show success message
+                    Toast.makeText(thisParent, response.body()?.message ?: "Profil berhasil diperbarui", Toast.LENGTH_SHORT).show()
+                } else {
+                    // Update failed
+                    val errorMsg = response.body()?.message ?: "Gagal memperbarui profil"
+                    Toast.makeText(thisParent, errorMsg, Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<ProfileUpdateResponse>, t: Throwable) {
+                // Hide loading indicator
+                b.progressBar.visibility = View.GONE
+                b.btnSaveChanges.isEnabled = true
+                b.btnCancel.isEnabled = true
+
+                // Show error message
+                Toast.makeText(thisParent, "Gagal terhubung ke server: ${t.message}", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     private fun cancelEdit() {

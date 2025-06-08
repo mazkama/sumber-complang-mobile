@@ -5,6 +5,8 @@ import com.febrivio.sumbercomplang.model.KolamListResponse
 import com.febrivio.sumbercomplang.model.KolamResponse
 import com.febrivio.sumbercomplang.model.LoginRequest
 import com.febrivio.sumbercomplang.model.LoginResponse
+import com.febrivio.sumbercomplang.model.ProfileUpdateRequest
+import com.febrivio.sumbercomplang.model.ProfileUpdateResponse
 import com.febrivio.sumbercomplang.model.RegisterRequest
 import com.febrivio.sumbercomplang.model.RegisterResponse
 import com.febrivio.sumbercomplang.model.RiwayatTransaksiTiketResponse
@@ -105,5 +107,10 @@ interface ApiService {
 
     @GET("tiket/used/{orderId}")
     fun validateTiket(@Path("orderId") orderId: String): Call<TiketValidationResponse>
+
+    @PUT("profile")
+    fun updateProfile(
+        @Body profileData: ProfileUpdateRequest
+    ): Call<ProfileUpdateResponse>
 
 }
