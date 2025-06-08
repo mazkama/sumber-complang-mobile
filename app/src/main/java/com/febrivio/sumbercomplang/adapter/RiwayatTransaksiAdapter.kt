@@ -10,7 +10,6 @@ import com.febrivio.sumbercomplang.databinding.ItemRiwayatTransaksiBinding
 import com.febrivio.sumbercomplang.model.RiwayatTransaksiItem
 import com.febrivio.sumbercomplang.utils.CurrencyHelper.formatCurrency
 import java.time.Instant
-import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
 import java.util.Locale
@@ -38,6 +37,7 @@ class RiwayatTransaksiAdapter(
                     "dibayar" -> com.febrivio.sumbercomplang.R.drawable.bg_status_success
                     "divalidasi" -> com.febrivio.sumbercomplang.R.drawable.bg_status_success
                     "dibatalkan" -> com.febrivio.sumbercomplang.R.drawable.bg_status_failed
+                    "gagal" -> com.febrivio.sumbercomplang.R.drawable.bg_status_failed
                     else -> com.febrivio.sumbercomplang.R.drawable.bg_status_pending
                 }
                 tvStatusTransaksi.setBackgroundResource(bgRes)

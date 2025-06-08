@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:rotation="-10"
+    android:elevation="4dp">
+
+    <!-- Watermark: SUMBER COMPLANG (besar dan samar) -->
+    <TextView
+        android:id="@+id/tvWatermarkSumber"
+        android:layout_width="249dp"
+        android:layout_height="141dp"
+        android:alpha="0.1"
+        android:fontFamily="sans-serif"
+        android:gravity="center"
+        android:letterSpacing="0.2"
+        android:rotation="-30"
+        android:text="SUMBER COMPLANG"
+        android:textAllCaps="true"
+        android:textColor="#131313"
+        android:textSize="32sp"
+        android:textStyle="bold" />
+
+    <!-- Stempel utama -->
+    <TextView
+        android:id="@+id/tvStatusStempel"
+        android:layout_width="206dp"
+        android:layout_height="59dp"
+        android:layout_gravity="center"
+        android:background="@drawable/bg_stempel_merah"
+        android:fontFamily="sans-serif-condensed"
+        android:gravity="center"
+        android:letterSpacing="0.2"
+        android:padding="6dp"
+        android:text="GAGAL ATAU DIBATALKAN"
+        android:textColor="@android:color/white"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+</FrameLayout>

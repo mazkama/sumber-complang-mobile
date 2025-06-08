@@ -9,6 +9,7 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.FragmentTransaction
 import com.febrivio.sumbercomplang.databinding.ActivityMainBinding
 import com.febrivio.sumbercomplang.databinding.FragmentRiwayatTransaksiBinding
+import com.febrivio.sumbercomplang.fragment.FragmentProfil
 import com.febrivio.sumbercomplang.fragment.dashboard.FragmentDashboardPengunjung
 import com.febrivio.sumbercomplang.fragment.dashboard.FragmentDashboardPetugasKolam
 import com.febrivio.sumbercomplang.fragment.dashboard.FragmentDashboardPetugasParkir
@@ -25,6 +26,7 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
     lateinit var fBerandaPetugasKolam: FragmentDashboardPetugasKolam
     lateinit var fBerandaPetugasParkir: FragmentDashboardPetugasParkir
     lateinit var fRiwayatTransaksi: FragmentRiwayatTransaksi
+    lateinit var fProfil: FragmentProfil
     lateinit var ft : FragmentTransaction
     lateinit var role : String
 
@@ -43,6 +45,7 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
         fBerandaPetugasKolam = FragmentDashboardPetugasKolam()
         fBerandaPetugasParkir = FragmentDashboardPetugasParkir()
         fRiwayatTransaksi = FragmentRiwayatTransaksi()
+        fProfil = FragmentProfil()
 
         b.bottomNavigationView.setSelectedItemId(R.id.nav_dashboard)
 
@@ -102,6 +105,15 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
 
                 supportFragmentManager.beginTransaction()
                     .replace(R.id.frameLayout, selectedFragment)
+                    .commit()
+
+                b.frameLayout.setBackgroundColor(Color.WHITE)
+                b.frameLayout.visibility = View.VISIBLE
+            }
+
+            R.id.nav_profile -> {
+                supportFragmentManager.beginTransaction()
+                    .replace(R.id.frameLayout, fProfil)
                     .commit()
 
                 b.frameLayout.setBackgroundColor(Color.WHITE)

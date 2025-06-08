@@ -5,6 +5,8 @@ import android.graphics.Bitmap
 import android.graphics.Color
 import android.net.Uri
 import android.os.Bundle
+import android.os.Handler
+import android.os.Looper
 import android.view.LayoutInflater
 import android.view.View
 import android.widget.Toast
@@ -32,6 +34,7 @@ class DetailTransaksiActivity : AppCompatActivity() {
     private lateinit var binding: ActivityDetailTransaksiBinding
     private lateinit var orderId: String
     private var transaksiData: TransaksiData? = null
+    private val handler = Handler(Looper.getMainLooper())
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -68,6 +71,20 @@ class DetailTransaksiActivity : AppCompatActivity() {
                     response: Response<TransaksiTiketResponse>
                 ) {
                     binding.swipeRefreshLayout.isRefreshing = false
+
+                    if (response.isSuccessful) {
+                        val data = response.body()?.data
+                        if (data != null) {
+                            setupTransactionDetails(data)
+
+                            // Cek status transaksi, hentikan polling jika status final
+                            val status = data.status.lowercase()
+                            if (status == "divalidasi" || status == "gagal" || status == "dibatalkan") {
+                                handler.removeCallbacks(refreshRunnable)
+                            }
+                        }
+                    }
+
                     if (response.isSuccessful && response.body() != null) {
                         transaksiData = response.body()!!.data
                         transaksiData?.let {
@@ -153,6 +170,15 @@ class DetailTransaksiActivity : AppCompatActivity() {
                 binding.stempelContainer.visibility = View.VISIBLE
             }
 
+            "dibatalkan", "gagal" -> {
+                binding.qrImageView.visibility = View.GONE
+
+                val stempelView = inflater.inflate(R.layout.stempel_telah_dibatalkan, binding.stempelContainer, false)
+                binding.stempelContainer.removeAllViews()
+                binding.stempelContainer.addView(stempelView)
+                binding.stempelContainer.visibility = View.VISIBLE
+            }
+
             else -> {
                 binding.qrImageView.visibility = View.GONE
                 binding.stempelContainer.removeAllViews()
@@ -165,7 +191,8 @@ class DetailTransaksiActivity : AppCompatActivity() {
         binding.btnBayar.setOnClickListener {
             transaksiData?.redirectUrl?.let { url ->
                 if (url.isNotEmpty()) {
-                    val intent = Intent(Intent.ACTION_VIEW, Uri.parse(url))
+                    val intent = Intent(this, WebViewActivity::class.java)
+                    intent.putExtra("url", url)
                     startActivity(intent)
                 }
             }
@@ -267,6 +294,23 @@ class DetailTransaksiActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private val refreshRunnable = object : Runnable {
+        override fun run() {
+            fetchTransactionDetail(orderId) // panggil API
+            handler.postDelayed(this, 10_000) // ulangi setiap 10 detik
+        }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        handler.post(refreshRunnable) // mulai polling saat halaman tampil
+    }
+
+    override fun onPause() {
+        super.onPause()
+        handler.removeCallbacks(refreshRunnable) // berhenti polling saat pindah halaman
     }
 
 }

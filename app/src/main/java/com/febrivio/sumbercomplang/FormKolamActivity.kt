@@ -58,17 +58,17 @@ class FormKolamActivity : AppCompatActivity() {
             Picasso.get().load(kolam.url_foto).into(b.imageKolam)
 
             // Tampilkan tombol Hapus jika mode edit
-            b.btnHapus.visibility = View.VISIBLE
-            b.btnHapus.setOnClickListener {
-                AlertDialog.Builder(this).apply {
-                    setTitle("Hapus Kolam")
-                    setMessage("Yakin ingin menghapus kolam ini?")
-                    setPositiveButton("Hapus") { _, _ ->
-                        deleteKolam(kolamId)
-                    }
-                    setNegativeButton("Batal", null)
-                }.show()
-            }
+//            b.btnHapus.visibility = View.VISIBLE
+//            b.btnHapus.setOnClickListener {
+//                AlertDialog.Builder(this).apply {
+//                    setTitle("Hapus Kolam")
+//                    setMessage("Yakin ingin menghapus kolam ini?")
+//                    setPositiveButton("Hapus") { _, _ ->
+//                        deleteKolam(kolamId)
+//                    }
+//                    setNegativeButton("Batal", null)
+//                }.show()
+//            }
         } else {
             // Sembunyikan tombol Hapus jika tidak dalam mode edit
             b.btnHapus.visibility = View.GONE

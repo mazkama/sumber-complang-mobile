@@ -7,6 +7,7 @@ import android.os.Looper
 import android.util.Log
 import android.view.animation.AlphaAnimation
 import android.widget.ImageView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.febrivio.sumbercomplang.services.SessionManager
@@ -34,6 +35,10 @@ class SplashActivity : AppCompatActivity() {
             fillAfter = true
         }
         splashImage.startAnimation(fadeIn)
+
+        // Animasi juga untuk teks
+        val titleSplash: TextView = findViewById(R.id.tvTitleSplash)
+        titleSplash.startAnimation(fadeIn)
 
         // Inisialisasi sessoin
         session = SessionManager(this)

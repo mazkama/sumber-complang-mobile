@@ -37,11 +37,11 @@ class KolamActivity : AppCompatActivity() {
         }
 
         // Button for navigating to FormKolamActivity
-        b.btnAddKolam.setOnClickListener {
-            val intent = Intent(this, FormKolamActivity::class.java)
-            // Start FormKolamActivity and expect a result
-            startActivity(intent)
-        }
+//        b.btnAddKolam.setOnClickListener {
+//            val intent = Intent(this, FormKolamActivity::class.java)
+//            // Start FormKolamActivity and expect a result
+//            startActivity(intent)
+//        }
 
         b.btnBack.setOnClickListener {
             finish()
@@ -52,17 +52,21 @@ class KolamActivity : AppCompatActivity() {
     }
 
     private fun getKolamData() {
-        // Show the refresh indicator
         b.swipeRefreshLayout.isRefreshing = true
 
         ApiClient.instance.getKolam().enqueue(object : Callback<KolamListResponse> {
             override fun onResponse(call: Call<KolamListResponse>, response: Response<KolamListResponse>) {
-                // Stop refreshing indicator
                 b.swipeRefreshLayout.isRefreshing = false
 
                 if (response.isSuccessful && response.body() != null) {
                     val kolamList = response.body()!!.data
-                    kolamAdapter = KolamAdapter(kolamList)
+
+                    kolamAdapter = KolamAdapter(kolamList) { kolam ->
+                        val intent = Intent(this@KolamActivity, FormKolamActivity::class.java)
+                        intent.putExtra("kolam", kolam)
+                        startActivity(intent)
+                    }
+
                     b.rvKolam.adapter = kolamAdapter
                 } else {
                     Toast.makeText(this@KolamActivity, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
@@ -70,12 +74,12 @@ class KolamActivity : AppCompatActivity() {
             }
 
             override fun onFailure(call: Call<KolamListResponse>, t: Throwable) {
-                // Stop refreshing indicator
                 b.swipeRefreshLayout.isRefreshing = false
                 Toast.makeText(this@KolamActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
     }
+
 
     // Menyegarkan data saat activity kembali muncul
     override fun onResume() {

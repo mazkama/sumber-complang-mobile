@@ -37,6 +37,8 @@ class FragmentRiwayatTransaksi : Fragment() {
     private var isLastPage = false
     private var selectedJenis = ""
 
+    private var lastRefreshTime: Long = 0
+
     private lateinit var session: SessionManager
 
     override fun onCreateView(
@@ -196,5 +198,14 @@ class FragmentRiwayatTransaksi : Fragment() {
         isLastPage = false
         b.tvDataNon.visibility = View.GONE
         fetchRiwayatTransaksiData(selectedJenis) // Pass the selectedJenis parameter
+    }
+
+    override fun onResume() {
+        super.onResume()
+        val currentTime = System.currentTimeMillis()
+        if (currentTime - lastRefreshTime > 10_000) { // 10 detik
+            fetchRiwayatTransaksiData()
+            lastRefreshTime = currentTime
+        }
     }
 }

@@ -9,7 +9,10 @@ import com.febrivio.sumbercomplang.databinding.ItemPoolBinding
 import com.febrivio.sumbercomplang.model.Kolam
 import com.squareup.picasso.Picasso
 
-class KolamAdapter(private val kolamList: List<Kolam>) : RecyclerView.Adapter<KolamAdapter.KolamViewHolder>() {
+class KolamAdapter(
+    private val kolamList: List<Kolam>,
+    private val onItemClicked: (Kolam) -> Unit
+) : RecyclerView.Adapter<KolamAdapter.KolamViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): KolamViewHolder {
         val binding = ItemPoolBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -22,11 +25,14 @@ class KolamAdapter(private val kolamList: List<Kolam>) : RecyclerView.Adapter<Ko
         holder.binding.tvPoolDeskripsi.text = kolam.deskripsi
         Picasso.get().load(kolam.url_foto).into(holder.binding.ivPoolImage)
 
+//        holder.itemView.setOnClickListener {
+//            val context = holder.itemView.context
+//            val intent = Intent(context, FormKolamActivity::class.java)
+//            intent.putExtra("kolam", kolam)
+//            context.startActivity(intent)
+//        }
         holder.itemView.setOnClickListener {
-            val context = holder.itemView.context
-            val intent = Intent(context, FormKolamActivity::class.java)
-            intent.putExtra("kolam", kolam)
-            context.startActivity(intent)
+            onItemClicked(kolam)
         }
     }
 

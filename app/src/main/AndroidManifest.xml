@@ -116,6 +116,7 @@
 
         <activity android:name=".WebViewActivity" />
         <activity android:name=".DetailTransaksiActivity" />
+        <activity android:name=".DetailKolamActivity" />
 
 
     </application>

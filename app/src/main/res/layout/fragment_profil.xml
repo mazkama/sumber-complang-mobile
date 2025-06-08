@@ -71,15 +71,16 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:orientation="vertical">
+                        android:background="@color/white"
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Nama Lengkap"
-                            android:textSize="12sp"
-                            android:textColor="#777" />
+                            android:textColor="#777"
+                            android:textSize="12sp" />
 
                         <FrameLayout
                             android:layout_width="match_parent"
@@ -91,18 +92,20 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="Febri Vio Auw"
-                                android:textSize="16sp"
-                                android:textColor="@android:color/black" />
+                                android:textColor="@android:color/black"
+                                android:textSize="16sp" />
 
                             <EditText
                                 android:id="@+id/etName"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="0812 3456 7890"
-                                android:textSize="16sp"
-                                android:inputType="textPersonName"
+                                android:layout_height="40dp"
                                 android:background="@drawable/bg_edittext_rounded"
+                                android:inputType="textPersonName"
                                 android:padding="4dp"
+                                android:paddingStart="10dp"
+                                android:text="0812 3456 7890"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
                                 android:visibility="gone" />
                         </FrameLayout>
                     </LinearLayout>
@@ -116,15 +119,16 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:orientation="vertical">
+                        android:background="@color/white"
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Email"
-                            android:textSize="12sp"
-                            android:textColor="#777" />
+                            android:textColor="#777"
+                            android:textSize="12sp" />
 
                         <FrameLayout
                             android:layout_width="match_parent"
@@ -136,18 +140,20 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="febrivio@gmail.com"
-                                android:textSize="16sp"
-                                android:textColor="@android:color/black" />
+                                android:textColor="@android:color/black"
+                                android:textSize="16sp" />
 
                             <EditText
                                 android:id="@+id/etEmail"
                                 android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="febrivio@gmail.com"
-                                android:textSize="16sp"
-                                android:inputType="textEmailAddress"
+                                android:layout_height="40dp"
                                 android:background="@drawable/bg_edittext_rounded"
+                                android:inputType="textEmailAddress"
                                 android:padding="4dp"
+                                android:paddingStart="10dp"
+                                android:text="febrivio@gmail.com"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
                                 android:visibility="gone" />
                         </FrameLayout>
                     </LinearLayout>
@@ -161,15 +167,16 @@
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:orientation="vertical">
+                        android:background="@color/white"
+                        android:orientation="vertical"
+                        android:padding="16dp">
 
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:text="Bergabung Sejak"
-                            android:textSize="12sp"
-                            android:textColor="#777" />
+                            android:textColor="#777"
+                            android:textSize="12sp" />
 
                         <FrameLayout
                             android:layout_width="match_parent"
@@ -181,8 +188,8 @@
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
                                 android:text="15 Mei 2025"
-                                android:textSize="16sp"
-                                android:textColor="@android:color/black" />
+                                android:textColor="@android:color/black"
+                                android:textSize="16sp" />
                         </FrameLayout>
                     </LinearLayout>
                 </LinearLayout>
@@ -219,19 +226,19 @@
                         android:id="@+id/btnChangePassword"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:orientation="horizontal"
+                        android:background="@color/white"
                         android:gravity="center_vertical"
-                        android:background="?attr/selectableItemBackground">
+                        android:orientation="horizontal"
+                        android:padding="16dp">
 
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
+                            android:layout_marginStart="16dp"
                             android:layout_weight="1"
                             android:text="Edit Profil"
-                            android:textSize="16sp"
-                            android:layout_marginStart="16dp"
-                            android:textColor="@android:color/black" />
+                            android:textColor="@android:color/black"
+                            android:textSize="16sp" />
                     </LinearLayout>
 
                     <View
@@ -244,10 +251,11 @@
                         android:id="@+id/btnLogout"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="16dp"
-                        android:orientation="horizontal"
+                        android:background="@color/white"
                         android:gravity="center_vertical"
-                        android:background="?attr/selectableItemBackground">
+                        android:orientation="horizontal"
+                        android:padding="16dp">
+
                         <TextView
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
@@ -279,12 +287,12 @@
                     android:id="@+id/btnCancel"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
                     android:layout_marginEnd="8dp"
+                    android:layout_weight="1"
+                    android:backgroundTint="#FF0000"
                     android:text="Batal"
-                    android:textColor="#777"
-                    android:backgroundTint="#F0F0F0"
-                    android:textAllCaps="false" />
+                    android:textAllCaps="false"
+                    android:textColor="#FFFFFF" />
 
                 <Button
                     android:id="@+id/btnSaveChanges"

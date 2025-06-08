@@ -19,7 +19,7 @@ data class Kolam(
     val id_kolam: Int,
     val nama: String,
     val deskripsi: String?,
-    val kedalaman: Double?,
-    val luas: Double?,
+    val kedalaman: Int?,
+    val luas: Int?,
     val url_foto: String?
 ) : Serializable

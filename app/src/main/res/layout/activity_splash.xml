@@ -4,20 +4,32 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:gravity="center"
-    android:background="@color/white">
+    android:background="@color/blue">
 
     <ImageView
         android:id="@+id/splash_image"
-        android:layout_width="150dp"
-        android:layout_height="150dp"
+        android:layout_width="250dp"
+        android:layout_height="250dp"
+        android:layout_marginTop="-30dp"
         android:contentDescription="Logo App"
-        android:src="@drawable/logo_sumber_complang" />
+        android:src="@mipmap/ic_launcher" />
+
+    <TextView
+        android:id="@+id/tvTitleSplash"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="-60dp"
+        android:text="Sumber\nComplang"
+        android:textAlignment="center"
+        android:textColor="@color/white"
+        android:textSize="48sp"
+        android:textStyle="bold" />
 
     <ProgressBar
         android:id="@+id/progressBar"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="100dp"
-        android:indeterminateTint="@color/blue" />
+        android:layout_marginTop="70dp"
+        android:indeterminateTint="@color/white" />
 
 </LinearLayout>

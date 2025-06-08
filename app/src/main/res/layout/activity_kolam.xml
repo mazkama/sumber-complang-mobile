@@ -61,19 +61,19 @@
 
             </LinearLayout>
 
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAddKolam"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_below="@+id/linearLayout"
-                android:layout_marginHorizontal="16dp"
-                android:layout_marginTop="30dp"
-                android:background="@drawable/bg_button_white"
-                android:padding="12dp"
-                android:text="Tambah Kolam"
-                android:textColor="#3D59F4"
-                android:textStyle="bold"
-                app:backgroundTint="@null" />
+<!--            <com.google.android.material.button.MaterialButton-->
+<!--                android:id="@+id/btnAddKolam"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_below="@+id/linearLayout"-->
+<!--                android:layout_marginHorizontal="16dp"-->
+<!--                android:layout_marginTop="30dp"-->
+<!--                android:background="@drawable/bg_button_white"-->
+<!--                android:padding="12dp"-->
+<!--                android:text="Tambah Kolam"-->
+<!--                android:textColor="#3D59F4"-->
+<!--                android:textStyle="bold"-->
+<!--                app:backgroundTint="@null" />-->
 
 
         </RelativeLayout>
