@@ -184,29 +184,68 @@
                     android:layout_marginTop="30dp"
                     android:text="Posisikan kode QR di dalam kotak"
                     android:textColor="#FFFFFF"
-                    android:textSize="16sp" />
-
-                <!-- Flash Button -->
-                <ImageButton
-                    android:id="@+id/btnFlash"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
+                    android:textSize="16sp" />                <!-- Button Container for side by side alignment -->
+                <LinearLayout
+                    android:id="@+id/buttonContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
                     android:layout_below="@id/scanArea"
                     android:layout_centerHorizontal="true"
                     android:layout_marginTop="80dp"
-                    android:background="@drawable/bg_circle_white_transparent"
-                    android:padding="12dp"
-                    android:src="@drawable/ic_flashlighton_24" />
+                    android:orientation="horizontal"
+                    android:gravity="center">
 
-                <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/btnFlash"
-                    android:layout_centerHorizontal="true"
-                    android:layout_marginTop="8dp"
-                    android:text="Flash"
-                    android:textColor="#FFFFFF"
-                    android:textSize="12sp" />
+                    <!-- Flash Button with Text -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="25dp"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <ImageButton
+                            android:id="@+id/btnFlash"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle_white_transparent"
+                            android:padding="12dp"
+                            android:src="@drawable/ic_flashlighton_24" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Flash"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                    <!-- Second Button with Text -->
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="25dp"
+                        android:orientation="vertical"
+                        android:gravity="center">
+
+                        <ImageButton
+                            android:id="@+id/btnPembelian"
+                            android:layout_width="48dp"
+                            android:layout_height="48dp"
+                            android:background="@drawable/bg_circle_white_transparent"
+                            android:padding="12dp"
+                            android:src="@drawable/ic_ticket_white" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="8dp"
+                            android:text="Pembelian"
+                            android:textColor="#FFFFFF"
+                            android:textSize="12sp" />
+                    </LinearLayout>
+
+                </LinearLayout>
             </RelativeLayout>
         </RelativeLayout>
     </LinearLayout>
