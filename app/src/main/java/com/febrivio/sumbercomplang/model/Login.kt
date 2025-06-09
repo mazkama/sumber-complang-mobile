@@ -1,11 +1,12 @@
 package com.febrivio.sumbercomplang.model
 
 data class LoginRequest(
-    val email: String,
+    val username: String,
     val password: String
 )
 
 data class LoginResponse(
+    val code: Int,
     val success: Boolean,
     val message: String,
     val token: String,
@@ -14,8 +15,9 @@ data class LoginResponse(
 
 data class User(
     val id_user: Int,
+    val username: String,
     val name: String,
-    val email: String,
+    val no_hp: String,
     val role: String,
     val created_at: String,
     val updated_at: String

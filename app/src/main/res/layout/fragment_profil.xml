@@ -126,7 +126,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Email"
+                            android:text="Username"
                             android:textColor="#777"
                             android:textSize="12sp" />
 
@@ -136,15 +136,15 @@
                             android:layout_marginTop="4dp">
 
                             <TextView
-                                android:id="@+id/tvEmail"
+                                android:id="@+id/tvUsername"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="febrivio@gmail.com"
+                                android:text="User123"
                                 android:textColor="@android:color/black"
                                 android:textSize="16sp" />
 
                             <EditText
-                                android:id="@+id/etEmail"
+                                android:id="@+id/etusername"
                                 android:layout_width="match_parent"
                                 android:layout_height="40dp"
                                 android:background="@drawable/bg_edittext_rounded"

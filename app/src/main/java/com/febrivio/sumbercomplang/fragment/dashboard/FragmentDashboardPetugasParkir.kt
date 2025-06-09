@@ -35,7 +35,7 @@ class FragmentDashboardPetugasParkir :  Fragment() {
         session = SessionManager(thisParent)
 
         b.tvUserName.setText(session.getUserName())
-        b.tvUserEmail.setText(session.getUserEmail())
+        b.tvUsername.setText("@${session.getUserUsername()}")
 
         b.cardTiket.setOnClickListener {
             val intent = Intent(thisParent, TiketActivity::class.java)

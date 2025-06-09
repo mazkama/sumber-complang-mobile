@@ -36,7 +36,7 @@ class FragmentDashboardPetugasKolam : Fragment() {
         session = SessionManager(thisParent)
 
         b.tvUserName.setText(session.getUserName())
-        b.tvUserEmail.setText(session.getUserEmail())
+        b.tvUsername.setText("@${session.getUserUsername()}")
 
         b.cardKolam.setOnClickListener {
             val intent = Intent(thisParent, KolamActivity::class.java)

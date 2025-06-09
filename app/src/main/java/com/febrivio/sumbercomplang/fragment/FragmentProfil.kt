@@ -42,7 +42,7 @@ class FragmentProfil : Fragment() {
 
         // Set nama dan email pengguna dari session
         b.tvName.text = session.getUserName()
-        b.tvEmail.text = session.getUserEmail()
+        b.tvUsername.text = session.getUserUsername()
 
         // Set tanggal bergabung (example - in a real app, this would come from user data)
         b.tvJoined.text = "15 Mei 2025"
@@ -98,12 +98,12 @@ class FragmentProfil : Fragment() {
             // Switch to edit mode
             b.tvName.visibility = View.GONE
             b.etName.visibility = View.VISIBLE
-            b.tvEmail.visibility = View.GONE
-            b.etEmail.visibility = View.VISIBLE
+            b.tvUsername.visibility = View.GONE
+            b.etusername.visibility = View.VISIBLE
 
             // Populate edit fields with current values
             b.etName.setText(b.tvName.text)
-            b.etEmail.setText(b.tvEmail.text)
+            b.etusername.setText(b.tvUsername.text)
 
             // Show save/cancel buttons
             b.layoutSaveButtons.visibility = View.VISIBLE
@@ -111,8 +111,8 @@ class FragmentProfil : Fragment() {
             // Switch back to view mode
             b.tvName.visibility = View.VISIBLE
             b.etName.visibility = View.GONE
-            b.tvEmail.visibility = View.VISIBLE
-            b.etEmail.visibility = View.GONE
+            b.tvUsername.visibility = View.VISIBLE
+            b.etusername.visibility = View.GONE
 
             // Hide save/cancel buttons
             b.layoutSaveButtons.visibility = View.GONE
@@ -122,17 +122,11 @@ class FragmentProfil : Fragment() {
     private fun saveChanges() {
         // Get the updated values
         val newName = b.etName.text.toString().trim()
-        val newEmail = b.etEmail.text.toString().trim()
+        val newUsername = b.etusername.text.toString().trim()
 
         // Validate inputs
-        if (newName.isEmpty() || newEmail.isEmpty()) {
+        if (newName.isEmpty() || newUsername.isEmpty()) {
             Toast.makeText(thisParent, "Semua field harus diisi", Toast.LENGTH_SHORT).show()
-            return
-        }
-
-        // Simple email validation
-        if (!android.util.Patterns.EMAIL_ADDRESS.matcher(newEmail).matches()) {
-            Toast.makeText(thisParent, "Format email tidak valid", Toast.LENGTH_SHORT).show()
             return
         }
 
@@ -142,7 +136,7 @@ class FragmentProfil : Fragment() {
         b.btnCancel.isEnabled = false
 
         // Create the request
-        val profileUpdateRequest = ProfileUpdateRequest(newName, newEmail)
+        val profileUpdateRequest = ProfileUpdateRequest(newName, newUsername)
 
         // Mendapatkan token dari SessionManager
         val token = SessionManager(thisParent).getToken()
@@ -162,11 +156,11 @@ class FragmentProfil : Fragment() {
 
                     // Update session data
                     session.saveUserName(newName)
-                    session.saveUserEmail(newEmail)
+                    session.saveUserUsername(newUsername)
 
                     // Update UI
                     b.tvName.text = newName
-                    b.tvEmail.text = newEmail
+                    b.tvUsername.text = newUsername
 
                     // Exit edit mode
                     toggleEditMode()
@@ -197,8 +191,8 @@ class FragmentProfil : Fragment() {
         isEditMode = false
         b.tvName.visibility = View.VISIBLE
         b.etName.visibility = View.GONE
-        b.tvEmail.visibility = View.VISIBLE
-        b.etEmail.visibility = View.GONE
+        b.tvUsername.visibility = View.VISIBLE
+        b.etusername.visibility = View.GONE
         b.layoutSaveButtons.visibility = View.GONE
     }
 }

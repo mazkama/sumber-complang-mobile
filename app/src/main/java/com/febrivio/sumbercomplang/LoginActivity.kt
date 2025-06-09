@@ -2,6 +2,7 @@ package com.febrivio.sumbercomplang
 
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.util.Patterns
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
@@ -39,12 +40,12 @@ class LoginActivity: AppCompatActivity() {
     }
 
     fun handleLogin() {
-        val email = b.edtEmailLogin.text.toString().trim()
+        val username = b.edtUsernameLogin.text.toString().trim()
         val password = b.edtPasswordLogin.text.toString()
 
-        if (!isValidInput(email, password)) return
+        if (!isValidInput(username, password)) return
 
-        val request = LoginRequest(email, password)
+        val request = LoginRequest(username, password)
 
         // Nonaktifkan tombol login saat proses berlangsung
         b.btnLogin.isEnabled = false
@@ -52,24 +53,27 @@ class LoginActivity: AppCompatActivity() {
 
         ApiClient.instance.loginUser(request).enqueue(object : Callback<LoginResponse> {
             override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                // Aktifkan kembali tombol setelah respon diterima
+                // Aktifkan kembali tombol
                 b.btnLogin.isEnabled = true
                 b.btnLogin.text = "Login"
 
                 if (response.isSuccessful) {
                     val res = response.body()
-                    if (res?.success == true) {
+                    if (res?.success == true && res.user != null) {
+                        val user = res.user
+
                         session.saveLogin(
-                            res.token,
-                            res.user.id_user,
-                            res.user.name,
-                            res.user.email,
-                            res.user.role
+                            res.token ?: "",
+                            user.id_user,
+                            user.username,
+                            user.name,
+                            user.no_hp,
+                            user.role
                         )
 
                         Toast.makeText(this@LoginActivity, "Login sukses!", Toast.LENGTH_SHORT).show()
 
-                        val role = res.user.role.lowercase()
+                        val role = user.role.lowercase()
                         val intent = when (role) {
                             "petugas_kolam", "petugas_parkir", "pengunjung" -> Intent(this@LoginActivity, MainActivity::class.java)
                             else -> {
@@ -78,33 +82,28 @@ class LoginActivity: AppCompatActivity() {
                             }
                         }
                         startActivityWithAnimation(intent)
-
-
-
-                        startActivityWithAnimation(intent)
                     } else {
                         Toast.makeText(this@LoginActivity, res?.message ?: "Gagal login", Toast.LENGTH_SHORT).show()
                     }
                 } else {
+                    // Coba parsing errorBody() jika memungkinkan
+                    val errorBody = response.errorBody()?.string()
+                    Log.e("LoginResponse", "Error body: $errorBody")
+
                     when (response.code()) {
-                        401 -> {
-                            Toast.makeText(this@LoginActivity, "Email atau password salah!", Toast.LENGTH_SHORT).show()
-                        }
-                        else -> {
-                            Toast.makeText(this@LoginActivity, "Server error: ${response.code()}", Toast.LENGTH_SHORT).show()
-                        }
+                        401 -> Toast.makeText(this@LoginActivity, "Username atau password salah!", Toast.LENGTH_SHORT).show()
+                        else -> Toast.makeText(this@LoginActivity, "Server error: ${response.code()}", Toast.LENGTH_SHORT).show()
                     }
                 }
             }
 
-
             override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                // Aktifkan kembali tombol jika error jaringan
                 b.btnLogin.isEnabled = true
                 b.btnLogin.text = "Login"
-                Toast.makeText(this@LoginActivity, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this@LoginActivity, "Koneksi gagal: ${t.localizedMessage}", Toast.LENGTH_SHORT).show()
             }
         })
+
     }
 
     private fun startActivityWithAnimation(intent: Intent) {
@@ -119,14 +118,8 @@ class LoginActivity: AppCompatActivity() {
 
     private fun isValidInput(email: String, password: String): Boolean {
         if (email.isEmpty()) {
-            b.edtEmailLogin.error = "Email tidak boleh kosong"
-            b.edtEmailLogin.requestFocus()
-            return false
-        }
-
-        if (!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
-            b.edtEmailLogin.error = "Format email tidak valid"
-            b.edtEmailLogin.requestFocus()
+            b.edtUsernameLogin.error = "Username tidak boleh kosong"
+            b.edtUsernameLogin.requestFocus()
             return false
         }
 

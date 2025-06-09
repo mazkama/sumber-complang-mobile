@@ -55,7 +55,7 @@ class FragmentDashboardPengunjung : Fragment() {
 
 
         b.tvUserName.setText(session.getUserName())
-        b.tvUserEmail.setText(session.getUserEmail())
+        b.tvUsername.setText("@${session.getUserUsername()}")
 
         b.cardTiketKolam.setOnClickListener {
             val intent = Intent(thisParent, TransaksiTiketActivity::class.java)

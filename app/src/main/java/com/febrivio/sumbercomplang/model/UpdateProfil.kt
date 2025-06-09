@@ -3,7 +3,7 @@ package com.febrivio.sumbercomplang.model
 // Data classes for request and response
 data class ProfileUpdateRequest(
     val name: String,
-    val email: String
+    val username: String
 )
 
 data class ProfileUpdateResponse(

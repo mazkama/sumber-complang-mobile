@@ -62,11 +62,11 @@
                     app:layout_constraintTop_toTopOf="@+id/ivUserProfile" />
 
                 <TextView
-                    android:id="@+id/tvUserEmail"
+                    android:id="@+id/tvUsername"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
-                    android:text="email@example.com"
+                    android:text="user123"
                     android:textColor="#E0E0E0"
                     android:textSize="12sp"
                     app:layout_constraintEnd_toEndOf="parent"

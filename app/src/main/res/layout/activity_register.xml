@@ -75,15 +75,44 @@
                 android:paddingTop="20dp">
 
                 <TextView
-                    android:id="@+id/tvName"
+                    android:id="@+id/tvUsername"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="24dp"
-                    android:text="Nama Lengkap"
+                    android:text="Username"
                     android:textColor="#333333"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="parent"
                     tools:layout_editor_absoluteY="15dp" />
+
+                <EditText
+                    android:id="@+id/edtUsernameRegister"
+                    android:layout_width="0dp"
+                    android:layout_height="48dp"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="8dp"
+                    android:layout_marginEnd="24dp"
+                    android:background="@drawable/edit_text_background"
+                    android:hint="Username"
+                    android:inputType="textPersonName"
+                    android:paddingStart="12dp"
+                    android:paddingEnd="12dp"
+                    android:textColor="@color/black"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/tvUsername" />
+
+                <TextView
+                    android:id="@+id/tvNameRegister"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="24dp"
+                    android:layout_marginTop="16dp"
+                    android:text="Nama Lengkap"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/edtUsernameRegister" />
 
                 <EditText
                     android:id="@+id/edtNameRegister"
@@ -100,36 +129,7 @@
                     android:textColor="@color/black"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvName" />
-
-                <TextView
-                    android:id="@+id/tvEmail"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="16dp"
-                    android:text="Email"
-                    android:textColor="#333333"
-                    android:textSize="16sp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/edtNameRegister" />
-
-                <EditText
-                    android:id="@+id/edtEmailRegister"
-                    android:layout_width="0dp"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="24dp"
-                    android:layout_marginTop="8dp"
-                    android:layout_marginEnd="24dp"
-                    android:background="@drawable/edit_text_background"
-                    android:hint="Email"
-                    android:inputType="textEmailAddress"
-                    android:paddingStart="12dp"
-                    android:paddingEnd="12dp"
-                    android:textColor="@color/black"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/tvEmail" />
+                    app:layout_constraintTop_toBottomOf="@+id/tvNameRegister" />
 
                 <TextView
                     android:id="@+id/tvPhone"
@@ -141,10 +141,10 @@
                     android:textColor="#333333"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/edtEmailRegister" />
+                    app:layout_constraintTop_toBottomOf="@+id/edtNameRegister" />
 
                 <EditText
-                    android:id="@+id/etPhone"
+                    android:id="@+id/edtPhone"
                     android:layout_width="0dp"
                     android:layout_height="48dp"
                     android:layout_marginStart="24dp"
@@ -170,7 +170,7 @@
                     android:textColor="#333333"
                     android:textSize="16sp"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/etPhone" />
+                    app:layout_constraintTop_toBottomOf="@+id/edtPhone" />
 
                 <EditText
                     android:id="@+id/edtPasswordRegister"
