@@ -80,6 +80,10 @@ class ScanTiketActivity : AppCompatActivity() {
         b.previewView.addOnLayoutChangeListener { _, _, _, _, _, _, _, _, _ ->
             updateScanAreaRect()
         }
+
+        b.btnPembelian.setOnClickListener {
+            Toast.makeText(this, "button pembeliian dikolik", Toast.LENGTH_LONG).show()
+        }
     }
 
     private fun updateScanAreaRect() {
