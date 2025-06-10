@@ -1,6 +1,5 @@
 package com.febrivio.sumbercomplang.adapter
 
-import com.febrivio.sumbercomplang.R
 import android.app.AlertDialog
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -8,13 +7,11 @@ import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.febrivio.sumbercomplang.databinding.ItemCardTotalBayarBinding
 import com.febrivio.sumbercomplang.databinding.ItemTiketTransaksiBinding
+import com.febrivio.sumbercomplang.databinding.BottomSheetNopolBinding
 import com.febrivio.sumbercomplang.model.Tiket
 import java.text.NumberFormat
 import java.util.Locale
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.withContext
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.GlobalScope
+import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class TransaksiTiketAdapter(
     private val listTiket: List<Tiket>,
@@ -66,8 +63,13 @@ class TransaksiTiketAdapter(
             val idTiket = tiket.id_tiket
             val jumlah = selectedTickets[idTiket] ?: 0
             val formattedHarga = NumberFormat.getNumberInstance(Locale("in", "ID")).format(tiket.harga)
-
             holder.binding.tvKategoriTiket.text = tiket.kategori
+            
+            // Show bottom sheet for vehicle categories
+            if (tiket.kategori.lowercase() == "mobil" || tiket.kategori.lowercase() == "motor") {
+                showBottomSheetNopol(holder)
+            }
+            
             holder.binding.tvNamaTiket.text = tiket.nama_tiket
             holder.binding.tvDesTiket.text = tiket.deskripsi
             holder.binding.tvHargaTiket.text = "Rp $formattedHarga"
@@ -112,23 +114,43 @@ class TransaksiTiketAdapter(
     private fun getSelectedTiket(): List<Tiket> {
         return listTiket.map { tiket ->
             tiket.copy(jumlah = selectedTickets[tiket.id_tiket] ?: 0)
-        }.filter { it.jumlah > 0 }
+        }.filter { it.jumlah > 0        }
     }
 
-    // Fungsi untuk memperbarui jumlah tiket di background
-    private fun updateQuantityInBackground(idTiket: Int, delta: Int, position: Int) {
-        GlobalScope.launch {
-            val currentQty = selectedTickets[idTiket] ?: 0
-            val newQty = currentQty + delta
-            if (newQty >= 0) {
-                selectedTickets[idTiket] = newQty
-                // Panggil notifyItemChanged di UI thread
-                withContext(Dispatchers.Main) {
-                    notifyItemChanged(position)
-                    notifyItemChanged(itemCount - 1) // Refresh total bayar
-                    onQuantityChange(getSelectedTiket())
-                }
+    private fun showBottomSheetNopol(holder: TiketViewHolder) {
+        val context = holder.itemView.context
+        val bottomSheetDialog = BottomSheetDialog(context)
+        val binding = BottomSheetNopolBinding.inflate(LayoutInflater.from(context))
+        bottomSheetDialog.setContentView(binding.root)
+        
+        binding.btnSimpan.setOnClickListener {
+            val huruf1 = binding.etPlatHuruf1.text.toString()
+            val angka = binding.etPlatAngka.text.toString()
+            val huruf2 = binding.etPlatHuruf2.text.toString()
+            
+            if (huruf1.isNotEmpty() && angka.isNotEmpty() && huruf2.isNotEmpty()) {
+                val platNomor = "$huruf1 $angka $huruf2"
+                Toast.makeText(context, "Plat nomor: $platNomor", Toast.LENGTH_SHORT).show()
+                bottomSheetDialog.dismiss()
+            } else {
+                Toast.makeText(context, "Harap lengkapi semua field", Toast.LENGTH_SHORT).show()
             }
+        }
+        
+        binding.btnBanyakKendaraan.setOnClickListener {
+            Toast.makeText(context, "Fitur multiple kendaraan diklik", Toast.LENGTH_SHORT).show()
+        }
+        
+        bottomSheetDialog.show()
+    }    // Fungsi untuk memperbarui jumlah tiket di background
+    private fun updateQuantityInBackground(idTiket: Int, delta: Int, position: Int) {
+        val currentQty = selectedTickets[idTiket] ?: 0
+        val newQty = currentQty + delta
+        if (newQty >= 0) {
+            selectedTickets[idTiket] = newQty
+            notifyItemChanged(position)
+            notifyItemChanged(itemCount - 1) // Refresh total bayar
+            onQuantityChange(getSelectedTiket())
         }
     }
 }

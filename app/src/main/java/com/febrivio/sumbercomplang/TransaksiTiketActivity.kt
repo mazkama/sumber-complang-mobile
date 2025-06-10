@@ -205,9 +205,4 @@ class TransaksiTiketActivity : AppCompatActivity() {
         })
     }
 
-
-
-
-
-
 }
