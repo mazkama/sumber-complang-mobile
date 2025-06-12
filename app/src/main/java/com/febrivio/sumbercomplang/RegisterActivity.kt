@@ -59,9 +59,9 @@ class RegisterActivity : AppCompatActivity() {
                             422 -> {
                                 // Tampilkan error validasi
                                 val errors = res.errors
-                                val errorMessage = StringBuilder("Validasi gagal:\n")
+                                val errorMessage = StringBuilder()
                                 errors?.forEach { (field, messages) ->
-                                    errorMessage.append("$field: ${messages.joinToString(", ")}\n")
+                                    errorMessage.append("${messages.joinToString(", ")}\n")
                                 }
                                 Toast.makeText(this@RegisterActivity, errors.toString(), Toast.LENGTH_LONG).show()
                             }

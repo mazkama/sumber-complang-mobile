@@ -67,6 +67,71 @@
                     android:layout_height="wrap_content"
                     android:orientation="vertical">
 
+                    <!-- Email -->
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:background="@color/white"
+                        android:orientation="vertical"
+                        android:padding="16dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="Username"
+                            android:textColor="#777"
+                            android:textSize="12sp" />
+
+                        <FrameLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp">
+
+                            <LinearLayout
+                                android:id="@+id/layoutUsernameView"
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:orientation="horizontal">
+
+                                <TextView
+                                    android:id="@+id/tvAtSymbol"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="@"
+                                    android:textColor="@android:color/black"
+                                    android:textSize="16sp"
+                                    android:layout_marginEnd="2dp" />
+
+                                <TextView
+                                    android:id="@+id/tvUsername"
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="User123"
+                                    android:textColor="@android:color/black"
+                                    android:textSize="16sp" />
+                            </LinearLayout>
+
+                            <EditText
+                                android:id="@+id/etusername"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:background="@drawable/bg_edittext_rounded"
+                                android:inputType="textEmailAddress"
+                                android:padding="4dp"
+                                android:paddingStart="10dp"
+                                android:text="febrivio@gmail.com"
+                                android:textColor="@color/black"
+                                android:textSize="16sp"
+                                android:visibility="gone" />
+                        </FrameLayout>
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="#E0E0E0" />
+
                     <!-- Nama Lengkap -->
                     <LinearLayout
                         android:layout_width="match_parent"
@@ -115,7 +180,7 @@
                         android:layout_height="1dp"
                         android:background="#E0E0E0" />
 
-                    <!-- Email -->
+                    <!-- No. HP -->
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
@@ -126,7 +191,7 @@
                         <TextView
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Username"
+                            android:text="No. HP"
                             android:textColor="#777"
                             android:textSize="12sp" />
 
@@ -136,62 +201,28 @@
                             android:layout_marginTop="4dp">
 
                             <TextView
-                                android:id="@+id/tvUsername"
+                                android:id="@+id/tvPhone"
                                 android:layout_width="match_parent"
                                 android:layout_height="wrap_content"
-                                android:text="User123"
+                                android:text="0812 3456 7890"
                                 android:textColor="@android:color/black"
                                 android:textSize="16sp" />
 
                             <EditText
-                                android:id="@+id/etusername"
+                                android:id="@+id/etPhone"
                                 android:layout_width="match_parent"
                                 android:layout_height="40dp"
                                 android:background="@drawable/bg_edittext_rounded"
-                                android:inputType="textEmailAddress"
+                                android:inputType="phone"
                                 android:padding="4dp"
                                 android:paddingStart="10dp"
-                                android:text="febrivio@gmail.com"
+                                android:text="0812 3456 7890"
                                 android:textColor="@color/black"
                                 android:textSize="16sp"
                                 android:visibility="gone" />
                         </FrameLayout>
                     </LinearLayout>
 
-                    <View
-                        android:layout_width="match_parent"
-                        android:layout_height="1dp"
-                        android:background="#E0E0E0" />
-
-                    <!-- Date of Birth -->
-                    <LinearLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="wrap_content"
-                        android:background="@color/white"
-                        android:orientation="vertical"
-                        android:padding="16dp">
-
-                        <TextView
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="Bergabung Sejak"
-                            android:textColor="#777"
-                            android:textSize="12sp" />
-
-                        <FrameLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="4dp">
-
-                            <TextView
-                                android:id="@+id/tvJoined"
-                                android:layout_width="match_parent"
-                                android:layout_height="wrap_content"
-                                android:text="15 Mei 2025"
-                                android:textColor="@android:color/black"
-                                android:textSize="16sp" />
-                        </FrameLayout>
-                    </LinearLayout>
                 </LinearLayout>
             </androidx.cardview.widget.CardView>
 

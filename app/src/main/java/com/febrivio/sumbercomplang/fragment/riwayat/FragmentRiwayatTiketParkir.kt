@@ -13,20 +13,22 @@ import androidx.recyclerview.widget.RecyclerView
 import com.febrivio.sumbercomplang.DetailTransaksiActivity
 import com.febrivio.sumbercomplang.MainActivity
 import com.febrivio.sumbercomplang.adapter.RiwayatTransaksiAdapter
-import com.febrivio.sumbercomplang.databinding.FragmentRiwayatTransaksiBinding
+import com.febrivio.sumbercomplang.databinding.FragmentRiwayatTiketKolamBinding
+import com.febrivio.sumbercomplang.databinding.FragmentRiwayatTiketParkirBinding
 import com.febrivio.sumbercomplang.model.RiwayatTransaksiItem
 import com.febrivio.sumbercomplang.model.RiwayatTransaksiTiketResponse
 import com.febrivio.sumbercomplang.model.TransaksiTiketResponse
-import com.febrivio.sumbercomplang.network.ApiClient
 import com.febrivio.sumbercomplang.network.ApiClient.ApiServiceAuth
+import com.febrivio.sumbercomplang.services.PdfDownloadHelper
 import com.febrivio.sumbercomplang.services.SessionManager
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.Calendar
 
-class FragmentRiwayatTransaksi : Fragment() {
+class FragmentRiwayatTiketParkir : Fragment() {
 
-    lateinit var b: FragmentRiwayatTransaksiBinding
+    lateinit var b: FragmentRiwayatTiketParkirBinding
     private lateinit var thisParent: MainActivity
     private lateinit var v: View
 
@@ -35,7 +37,7 @@ class FragmentRiwayatTransaksi : Fragment() {
     private var currentPage = 1
     private var isLoading = false
     private var isLastPage = false
-    private var selectedJenis = ""
+    private var selectedStatus = ""
 
     private var lastRefreshTime: Long = 0
 
@@ -48,7 +50,7 @@ class FragmentRiwayatTransaksi : Fragment() {
     ): View {
         // Initialize binding and view
         thisParent = activity as MainActivity
-        b = FragmentRiwayatTransaksiBinding.inflate(inflater, container, false)
+        b = FragmentRiwayatTiketParkirBinding.inflate(inflater, container, false)
         v = b.root
 
         session = SessionManager(thisParent)
@@ -58,10 +60,74 @@ class FragmentRiwayatTransaksi : Fragment() {
 
         // Initialize "Semua" as selected
         b.btnSemua.isSelected = true
-        selectedJenis = ""
-        fetchRiwayatTransaksiData(selectedJenis)
+        selectedStatus = ""
+        fetchRiwayatTransaksiData(selectedStatus)
+
+        // Get current month and year
+        val calendar = Calendar.getInstance()
+        val monthName = getIndonesianMonth(calendar.get(Calendar.MONTH))
+        val year = calendar.get(Calendar.YEAR)
+
+        // Set button text with current month and year
+        b.btnCetakLaporan.text = "Cetak Laporan - $monthName $year"
+
+        b.btnCetakLaporan.setOnClickListener {
+            // Get current month and year
+            val calendar = Calendar.getInstance()
+            val month = String.format("%02d", calendar.get(Calendar.MONTH) + 1)
+            val year = calendar.get(Calendar.YEAR).toString()
+
+            // Get token
+            val token = session.getToken()
+
+            // Use the helper class
+            val pdfHelper = PdfDownloadHelper(thisParent)
+            pdfHelper.downloadMonthlyReport(
+                month = month,
+                year = year,
+                reportType = "parkir",
+                token = token.toString(),
+                onStartDownload = {
+                    // Show loading indicator
+                    b.swipeRefresh.isRefreshing = true
+                    Toast.makeText(thisParent, "Memulai download laporan...", Toast.LENGTH_SHORT).show()
+                },
+                onFinishDownload = {
+                    // Hide loading indicator
+                    activity?.runOnUiThread {
+                        b.swipeRefresh.isRefreshing = false
+                    }
+                },
+                onError = { errorMessage ->
+                    // Handle error and hide loading
+                    activity?.runOnUiThread {
+                        b.swipeRefresh.isRefreshing = false
+                        Toast.makeText(thisParent, errorMessage, Toast.LENGTH_SHORT).show()
+                    }
+                }
+            )
+        }
 
         return v
+    }
+
+    // Function to convert month number to Indonesian month name
+    private fun getIndonesianMonth(month: Int): String {
+        return when (month) {
+            Calendar.JANUARY -> "Januari"
+            Calendar.FEBRUARY -> "Februari"
+            Calendar.MARCH -> "Maret"
+            Calendar.APRIL -> "April"
+            Calendar.MAY -> "Mei"
+            Calendar.JUNE -> "Juni"
+            Calendar.JULY -> "Juli"
+            Calendar.AUGUST -> "Agustus"
+            Calendar.SEPTEMBER -> "September"
+            Calendar.OCTOBER -> "Oktober"
+            Calendar.NOVEMBER -> "November"
+            Calendar.DECEMBER -> "Desember"
+            else -> "Unknown"
+        }
     }
 
     private fun setupRecyclerView() {
@@ -86,7 +152,7 @@ class FragmentRiwayatTransaksi : Fragment() {
 
     private fun setupListeners() {
         with(b) {
-            val buttons = listOf(btnSemua, btnKolam, btnParkir)
+            val buttons = listOf(btnSemua, btnReserved)
 
             fun updateButtonStates(selectedButton: TextView) {
                 buttons.forEach { button ->
@@ -99,19 +165,13 @@ class FragmentRiwayatTransaksi : Fragment() {
 
             btnSemua.setOnClickListener {
                 updateButtonStates(btnSemua)
-                selectedJenis = ""
+                selectedStatus = ""
                 refreshData()
             }
 
-            btnKolam.setOnClickListener {
-                updateButtonStates(btnKolam)
-                selectedJenis = "kolam"
-                refreshData()
-            }
-
-            btnParkir.setOnClickListener {
-                updateButtonStates(btnParkir)
-                selectedJenis = "parkir"
+            btnReserved.setOnClickListener {
+                updateButtonStates(btnReserved)
+                selectedStatus = "reserved"
                 refreshData()
             }
 
@@ -122,13 +182,13 @@ class FragmentRiwayatTransaksi : Fragment() {
         }
     }
 
-    private fun fetchRiwayatTransaksiData(jenis: String = "") {
+    private fun fetchRiwayatTransaksiData(status: String = "") {
         if (isLoading) return
         isLoading = true
         b.swipeRefresh.isRefreshing = true
         val token = session.getToken()
 
-        ApiServiceAuth(thisParent,token).getRiwayatTransaksi(jenis, "",currentPage).enqueue(object : Callback<RiwayatTransaksiTiketResponse> {
+        ApiServiceAuth(thisParent,token).getRiwayatTransaksi("parkir", status,currentPage).enqueue(object : Callback<RiwayatTransaksiTiketResponse> {
             override fun onResponse(call: Call<RiwayatTransaksiTiketResponse>, response: Response<RiwayatTransaksiTiketResponse>) {
                 isLoading = false
                 b.swipeRefresh.isRefreshing = false
@@ -197,7 +257,7 @@ class FragmentRiwayatTransaksi : Fragment() {
         currentPage = 1
         isLastPage = false
         b.tvDataNon.visibility = View.GONE
-        fetchRiwayatTransaksiData(selectedJenis) // Pass the selectedJenis parameter
+        fetchRiwayatTransaksiData(selectedStatus) // Pass the selecteStatus parameter
     }
 
     override fun onResume() {

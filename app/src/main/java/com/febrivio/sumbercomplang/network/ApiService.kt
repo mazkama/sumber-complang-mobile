@@ -1,5 +1,6 @@
 package com.febrivio.sumbercomplang.network
 
+import com.febrivio.sumbercomplang.model.DashboardResponse
 import com.febrivio.sumbercomplang.model.Kolam
 import com.febrivio.sumbercomplang.model.KolamListResponse
 import com.febrivio.sumbercomplang.model.KolamResponse
@@ -28,6 +29,7 @@ import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
+import retrofit2.http.Streaming
 
 interface ApiService {
 
@@ -95,6 +97,7 @@ interface ApiService {
     @GET("transaksi-tiket")
     fun getRiwayatTransaksi(
         @Query("jenis") jenis: String,
+        @Query("status") status: String,
         @Query("page") page: Int,
     ): Call<RiwayatTransaksiTiketResponse>
 
@@ -112,5 +115,18 @@ interface ApiService {
     fun updateProfile(
         @Body profileData: ProfileUpdateRequest
     ): Call<ProfileUpdateResponse>
+
+    @Streaming
+    @GET("transaksi/export/monthly")
+    fun downloadMonthlyReport(
+        @Query("bulan") month: String,
+        @Query("tahun") year: String,
+        @Query("jenis") type: String
+    ): Call<ResponseBody>
+
+    @GET("dashboard/statistics")
+    fun getDashboardStatistics(
+        @Query("jenis") jenis: String
+    ): Call<DashboardResponse>
 
 }

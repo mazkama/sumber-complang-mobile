@@ -13,6 +13,8 @@ import com.febrivio.sumbercomplang.fragment.FragmentProfil
 import com.febrivio.sumbercomplang.fragment.dashboard.FragmentDashboardPengunjung
 import com.febrivio.sumbercomplang.fragment.dashboard.FragmentDashboardPetugasKolam
 import com.febrivio.sumbercomplang.fragment.dashboard.FragmentDashboardPetugasParkir
+import com.febrivio.sumbercomplang.fragment.riwayat.FragmentRiwayatTiketKolam
+import com.febrivio.sumbercomplang.fragment.riwayat.FragmentRiwayatTiketParkir
 import com.febrivio.sumbercomplang.fragment.riwayat.FragmentRiwayatTransaksi
 import com.febrivio.sumbercomplang.services.SessionManager
 import com.google.android.material.navigation.NavigationBarView
@@ -26,6 +28,8 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
     lateinit var fBerandaPetugasKolam: FragmentDashboardPetugasKolam
     lateinit var fBerandaPetugasParkir: FragmentDashboardPetugasParkir
     lateinit var fRiwayatTransaksi: FragmentRiwayatTransaksi
+    lateinit var fRiwayatTiketKolam: FragmentRiwayatTiketKolam
+    lateinit var fRiwayatTiketParkir: FragmentRiwayatTiketParkir
     lateinit var fProfil: FragmentProfil
     lateinit var ft : FragmentTransaction
     lateinit var role : String
@@ -45,6 +49,8 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
         fBerandaPetugasKolam = FragmentDashboardPetugasKolam()
         fBerandaPetugasParkir = FragmentDashboardPetugasParkir()
         fRiwayatTransaksi = FragmentRiwayatTransaksi()
+        fRiwayatTiketKolam = FragmentRiwayatTiketKolam()
+        fRiwayatTiketParkir = FragmentRiwayatTiketParkir()
         fProfil = FragmentProfil()
 
         b.bottomNavigationView.setSelectedItemId(R.id.nav_dashboard)
@@ -98,6 +104,8 @@ class MainActivity : AppCompatActivity(), NavigationBarView.OnItemSelectedListen
                 // Tentukan fragment yang akan ditampilkan berdasarkan role
                 val selectedFragment = when (role.lowercase()) {
                     "pengunjung" -> fRiwayatTransaksi
+                    "petugas_kolam" -> fRiwayatTiketKolam
+                    "petugas_parkir" -> fRiwayatTiketParkir
                     else -> {
                         return false
                     }

@@ -43,9 +43,7 @@ class FragmentProfil : Fragment() {
         // Set nama dan email pengguna dari session
         b.tvName.text = session.getUserName()
         b.tvUsername.text = session.getUserUsername()
-
-        // Set tanggal bergabung (example - in a real app, this would come from user data)
-        b.tvJoined.text = "15 Mei 2025"
+        b.tvPhone.text = session.getUserNoHp()
 
         setupClickListeners()
 
@@ -100,10 +98,14 @@ class FragmentProfil : Fragment() {
             b.etName.visibility = View.VISIBLE
             b.tvUsername.visibility = View.GONE
             b.etusername.visibility = View.VISIBLE
+            b.tvPhone.visibility = View.GONE
+            b.etPhone.visibility = View.VISIBLE
+
 
             // Populate edit fields with current values
             b.etName.setText(b.tvName.text)
             b.etusername.setText(b.tvUsername.text)
+            b.etPhone.setText(b.tvPhone.text)
 
             // Show save/cancel buttons
             b.layoutSaveButtons.visibility = View.VISIBLE
@@ -113,6 +115,8 @@ class FragmentProfil : Fragment() {
             b.etName.visibility = View.GONE
             b.tvUsername.visibility = View.VISIBLE
             b.etusername.visibility = View.GONE
+            b.tvPhone.visibility = View.VISIBLE
+            b.etPhone.visibility = View.GONE
 
             // Hide save/cancel buttons
             b.layoutSaveButtons.visibility = View.GONE
@@ -123,9 +127,10 @@ class FragmentProfil : Fragment() {
         // Get the updated values
         val newName = b.etName.text.toString().trim()
         val newUsername = b.etusername.text.toString().trim()
+        val newPhone = b.etPhone.text.toString().trim()
 
         // Validate inputs
-        if (newName.isEmpty() || newUsername.isEmpty()) {
+        if (newName.isEmpty() || newUsername.isEmpty() || newPhone.isEmpty()) {
             Toast.makeText(thisParent, "Semua field harus diisi", Toast.LENGTH_SHORT).show()
             return
         }
@@ -136,7 +141,7 @@ class FragmentProfil : Fragment() {
         b.btnCancel.isEnabled = false
 
         // Create the request
-        val profileUpdateRequest = ProfileUpdateRequest(newName, newUsername)
+        val profileUpdateRequest = ProfileUpdateRequest(newName, newUsername, newPhone)
 
         // Mendapatkan token dari SessionManager
         val token = SessionManager(thisParent).getToken()
@@ -151,26 +156,45 @@ class FragmentProfil : Fragment() {
                 b.btnSaveChanges.isEnabled = true
                 b.btnCancel.isEnabled = true
 
-                if (response.isSuccessful && response.body()?.status == true) {
-                    // Update was successful
+                if (response.isSuccessful) {
+                    val res = response.body()
+                    when (res?.code) {
+                        200, 201 -> {
+                            // Update was successful
 
-                    // Update session data
-                    session.saveUserName(newName)
-                    session.saveUserUsername(newUsername)
+                            // Update session data
+                            session.saveUserName(newName)
+                            session.saveUserUsername(newUsername)
+                            session.saveUserNoHp(newPhone)
 
-                    // Update UI
-                    b.tvName.text = newName
-                    b.tvUsername.text = newUsername
+                            // Update UI
+                            b.tvName.text = newName
+                            b.tvUsername.text = newUsername
+                            b.tvPhone.text = newPhone
 
-                    // Exit edit mode
-                    toggleEditMode()
+                            // Exit edit mode
+                            toggleEditMode()
 
-                    // Show success message
-                    Toast.makeText(thisParent, response.body()?.message ?: "Profil berhasil diperbarui", Toast.LENGTH_SHORT).show()
+                            // Show success message
+                            Toast.makeText(thisParent, res.message ?: "Profil berhasil diperbarui", Toast.LENGTH_SHORT).show()
+                        }
+                        422 -> {
+                            // Validation errors
+                            val errors = res.errors
+                            val errorMessage = StringBuilder()
+                            errors?.forEach { (field, messages) ->
+                                errorMessage.append("${messages.joinToString(", ")}\n")
+                            }
+                            Toast.makeText(thisParent, errorMessage.toString(), Toast.LENGTH_LONG).show()
+                        }
+                        else -> {
+                            // Other error codes
+                            Toast.makeText(thisParent, res?.message ?: "Terjadi kesalahan", Toast.LENGTH_SHORT).show()
+                        }
+                    }
                 } else {
-                    // Update failed
-                    val errorMsg = response.body()?.message ?: "Gagal memperbarui profil"
-                    Toast.makeText(thisParent, errorMsg, Toast.LENGTH_SHORT).show()
+                    // Response not successful (network error, server error, etc)
+                    Toast.makeText(thisParent, "Gagal memperbarui profil: ${response.message()}", Toast.LENGTH_SHORT).show()
                 }
             }
 
@@ -193,6 +217,8 @@ class FragmentProfil : Fragment() {
         b.etName.visibility = View.GONE
         b.tvUsername.visibility = View.VISIBLE
         b.etusername.visibility = View.GONE
+        b.tvPhone.visibility = View.VISIBLE
+        b.etPhone.visibility = View.GONE
         b.layoutSaveButtons.visibility = View.GONE
     }
 }

@@ -121,8 +121,10 @@ class DetailTransaksiActivity : AppCompatActivity() {
 
         when (transaksiData.status.lowercase()) {
             "menunggu" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_pending)
-            "dibayar", "divalidasi" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_success)
-            "gagal","dibatalkan" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_failed)
+            "dibayar" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_success)
+            "divalidasi" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_validate)
+            "gagal", "dibatalkan" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_failed)
+            "selesai" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_finish)
             else -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_pending)
         }
 
@@ -161,6 +163,15 @@ class DetailTransaksiActivity : AppCompatActivity() {
             }
 
             "divalidasi" -> {
+                val qrBitmap = generateQRCode(transaksiData.orderId)
+                binding.qrImageView.setImageBitmap(qrBitmap)
+                binding.qrImageView.visibility = View.VISIBLE
+
+                binding.stempelContainer.removeAllViews()
+                binding.stempelContainer.visibility = View.GONE
+            }
+
+            "selesai" -> {
                 binding.qrImageView.visibility = View.GONE
 
                 // Inflate layout stempel dan tambahkan ke container

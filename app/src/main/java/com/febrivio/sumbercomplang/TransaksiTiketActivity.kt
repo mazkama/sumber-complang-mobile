@@ -42,8 +42,8 @@ class TransaksiTiketActivity : AppCompatActivity() {
 
         jenisTiket = intent.getStringExtra("jenis_tiket").toString()
 
-        if (jenisTiket == "kolam") b.tvPembelianTiket.setText("Pembelian Tiket Kolam")
-        else b.tvPembelianTiket.setText("Pembelian Tiket Parkir")
+        if (jenisTiket == "kolam") b.tvPembelianTiket.setText("Tiket Kolam Renang")
+        else b.tvPembelianTiket.setText("Tiket Parkir")
 
         // Setup SwipeRefresh
         b.swipeRefreshLayout.setOnRefreshListener {
