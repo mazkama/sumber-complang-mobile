@@ -10,7 +10,8 @@ data class TransaksiTiketRequest(
 
 data class TiketDetail(
     @SerializedName("id_tiket") val idTiket: Int,
-    @SerializedName("jumlah") val jumlah: Int
+    @SerializedName("jumlah") val jumlah: Int,
+    @SerializedName("no_kendaraan") val noKendaraan: String
 )
 
 data class TransaksiTiketResponse(

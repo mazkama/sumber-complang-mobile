@@ -98,6 +98,7 @@
                     android:hint="AB"
                     android:inputType="textCapCharacters"
                     android:maxLength="2"
+                    android:gravity="center"
                     android:textAlignment="center"
                     android:textAllCaps="true"
                     android:textSize="22sp"
@@ -109,6 +110,7 @@
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:letterSpacing="0.1"
+                    android:imeOptions="actionNext"
                     android:elevation="2dp" />
 
             </com.google.android.material.textfield.TextInputLayout>            <!-- Second Column - 4 Numbers -->
@@ -138,6 +140,7 @@
                     android:hint="1234"
                     android:inputType="number"
                     android:maxLength="4"
+                    android:gravity="center"
                     android:textAlignment="center"
                     android:textSize="22sp"
                     android:textStyle="bold"
@@ -148,6 +151,7 @@
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:letterSpacing="0.15"
+                    android:imeOptions="actionNext"
                     android:elevation="2dp" />
 
             </com.google.android.material.textfield.TextInputLayout>            <!-- Third Column - 3 Letters -->
@@ -176,6 +180,7 @@
                     android:hint="XYZ"
                     android:inputType="textCapCharacters"
                     android:maxLength="3"
+                    android:gravity="center"
                     android:textAlignment="center"
                     android:textAllCaps="true"
                     android:textSize="22sp"
@@ -187,6 +192,7 @@
                     android:paddingStart="16dp"
                     android:paddingEnd="16dp"
                     android:letterSpacing="0.1"
+                    android:imeOptions="actionDone"
                     android:elevation="2dp" />
 
             </com.google.android.material.textfield.TextInputLayout>

@@ -120,7 +120,14 @@ class TransaksiTiketActivity : AppCompatActivity() {
         for (tiket in selectedTiketList) {
             val subtotal = tiket.harga * tiket.jumlah
             total += subtotal
+            
+            // Add base ticket information
             sb.append("${tiket.nama_tiket} x${tiket.jumlah} = Rp ${formatCurrency(subtotal)}\n")
+            
+            // Add license plate info if available
+            if (tiket.no_kendaraan != null && tiket.no_kendaraan.isNotEmpty() && tiket.no_kendaraan != "-") {
+                sb.append("   No. Kendaraan: ${tiket.no_kendaraan}\n")
+            }
         }
 
         sb.append("\nMetode Pembayaran: $selectedPaymentMethod")
@@ -145,7 +152,14 @@ class TransaksiTiketActivity : AppCompatActivity() {
         }
 
         val tiketDetails = selectedTiketList.map {
-            TiketDetail(idTiket = it.id_tiket, jumlah = it.jumlah)
+            // Use the actual license plate number if available, otherwise use empty string
+            val nopol = if (it.no_kendaraan != null && it.no_kendaraan.isNotEmpty()) {
+                it.no_kendaraan
+            } else {
+                ""  // Default value if no license plate
+            }
+            
+            TiketDetail(idTiket = it.id_tiket, jumlah = it.jumlah, nopol)
         }
 
         val request = TransaksiTiketRequest(

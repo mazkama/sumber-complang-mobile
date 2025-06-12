@@ -35,7 +35,10 @@ data class Tiket(
     @SerializedName("harga")
     val harga: Int,
 
-    var jumlah: Int = 0  // jumlah ini digunakan untuk transaksi lokal
+    var jumlah: Int = 0,  // jumlah ini digunakan untuk transaksi lokal
+
+    var no_kendaraan: String = ""
+
 )
 
 //data class Tiket(
