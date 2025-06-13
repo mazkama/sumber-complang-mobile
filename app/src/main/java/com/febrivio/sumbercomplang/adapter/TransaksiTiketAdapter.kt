@@ -190,14 +190,50 @@ class TransaksiTiketAdapter(
         }
         
         return result
-    }
-
-    // Updated method to store license plate number
+    }    // Updated method to store license plate number
     private fun showBottomSheetNopol(holder: TiketViewHolder, tiket: Tiket) {
         val context = holder.itemView.context
         val bottomSheetDialog = BottomSheetDialog(context)
         val binding = BottomSheetNopolBinding.inflate(LayoutInflater.from(context))
         bottomSheetDialog.setContentView(binding.root)
+        
+        // Auto focus on first field and show keyboard
+        binding.etPlatHuruf1.requestFocus()
+        bottomSheetDialog.window?.setSoftInputMode(android.view.WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE)
+          // Auto navigation between fields
+        binding.etPlatHuruf1.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                if (s?.length == 2) {
+                    binding.etPlatAngka.requestFocus()
+                }
+            }
+        })
+        
+        binding.etPlatAngka.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                if (s?.length == 4) {
+                    binding.etPlatHuruf2.requestFocus()
+                } else if (s?.isEmpty() == true) {
+                    binding.etPlatHuruf1.requestFocus()
+                    binding.etPlatHuruf1.setSelection(binding.etPlatHuruf1.text?.length ?: 0)
+                }
+            }
+        })
+        
+        binding.etPlatHuruf2.addTextChangedListener(object : android.text.TextWatcher {
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {}
+            override fun afterTextChanged(s: android.text.Editable?) {
+                if (s?.isEmpty() == true) {
+                    binding.etPlatAngka.requestFocus()
+                    binding.etPlatAngka.setSelection(binding.etPlatAngka.text?.length ?: 0)
+                }
+            }
+        })
         
         binding.btnSimpan.setOnClickListener {
             val huruf1 = binding.etPlatHuruf1.text.toString().uppercase()
@@ -205,7 +241,16 @@ class TransaksiTiketAdapter(
             val huruf2 = binding.etPlatHuruf2.text.toString().uppercase()
             
             if (huruf1.isNotEmpty() && angka.isNotEmpty() && huruf2.isNotEmpty()) {
-                val platNomor = "$huruf1 $angka $huruf2"
+                val platNomor = "$huruf1 $angka $huruf2"                // Check for duplicate license plate
+                val allPlateNumbers = ArrayList<String>()
+                selectedTickets.values.forEach { ticketInfo ->
+                    allPlateNumbers.addAll(ticketInfo.plateNumbers)
+                }
+                
+                if (allPlateNumbers.contains(platNomor)) {
+                    Toast.makeText(context, "Nomor plat $platNomor sudah digunakan", Toast.LENGTH_SHORT).show()
+                    return@setOnClickListener
+                }
                 
                 // Add the new plate number
                 addPlateNumber(tiket.id_tiket, platNomor, holder.adapterPosition, context)
@@ -222,11 +267,6 @@ class TransaksiTiketAdapter(
             } else {
                 Toast.makeText(context, "Harap lengkapi semua field", Toast.LENGTH_SHORT).show()
             }
-        }
-        
-        binding.btnBanyakKendaraan.setOnClickListener {
-            Toast.makeText(context, "Fitur multiple kendaraan diklik", Toast.LENGTH_SHORT).show()
-            // Could implement batch entry here in the future
         }
         
         bottomSheetDialog.show()

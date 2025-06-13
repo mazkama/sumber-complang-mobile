@@ -42,6 +42,7 @@ class TiketActivity : AppCompatActivity() {
 
         b.btnPembelianTiket.setOnClickListener {
             val intent = Intent(this, TiketOfflineActivity::class.java)
+            intent.putExtra("jenis_tiket", "kolam")
             startActivity(intent)
             finish()
         }

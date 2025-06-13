@@ -88,8 +88,7 @@
                 app:boxStrokeWidth="0dp"
                 app:boxStrokeWidthFocused="3dp"
                 app:hintEnabled="false"
-                app:endIconMode="clear_text"
-                app:endIconTint="@color/blue">
+                app:endIconMode="none">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPlatHuruf1"
@@ -103,15 +102,18 @@
                     android:textAllCaps="true"
                     android:textSize="22sp"
                     android:textStyle="bold"
-                    android:textColor="#1A1A1A"
-                    android:textColorHint="#9E9E9E"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#E3F2FD"
                     android:paddingTop="20dp"
                     android:paddingBottom="20dp"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:letterSpacing="0.1"
                     android:imeOptions="actionNext"
-                    android:elevation="2dp" />
+                    android:elevation="2dp"
+                    android:textCursorDrawable="@null"
+                    android:background="@drawable/bg_input_rounded_blue"
+                    android:textDirection="ltr"/>
 
             </com.google.android.material.textfield.TextInputLayout>            <!-- Second Column - 4 Numbers -->
             <com.google.android.material.textfield.TextInputLayout
@@ -130,29 +132,31 @@
                 app:boxStrokeWidth="0dp"
                 app:boxStrokeWidthFocused="3dp"
                 app:hintEnabled="false"
-                app:endIconMode="clear_text"
-                app:endIconTint="@color/blue">
+                app:endIconMode="none">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPlatAngka"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:hint="1234"
-                    android:inputType="number"
+                    android:inputType="number|textNoSuggestions"
                     android:maxLength="4"
                     android:gravity="center"
                     android:textAlignment="center"
                     android:textSize="22sp"
                     android:textStyle="bold"
-                    android:textColor="#1A1A1A"
-                    android:textColorHint="#9E9E9E"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#E3F2FD"
                     android:paddingTop="20dp"
                     android:paddingBottom="20dp"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:letterSpacing="0.15"
                     android:imeOptions="actionNext"
-                    android:elevation="2dp" />
+                    android:elevation="2dp"
+                    android:textCursorDrawable="@null"
+                    android:background="@drawable/bg_input_rounded_blue"
+                    android:textDirection="ltr" />
 
             </com.google.android.material.textfield.TextInputLayout>            <!-- Third Column - 3 Letters -->
             <com.google.android.material.textfield.TextInputLayout
@@ -170,8 +174,7 @@
                 app:boxStrokeWidth="0dp"
                 app:boxStrokeWidthFocused="3dp"
                 app:hintEnabled="false"
-                app:endIconMode="clear_text"
-                app:endIconTint="@color/blue">
+                app:endIconMode="none">
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/etPlatHuruf2"
@@ -185,35 +188,24 @@
                     android:textAllCaps="true"
                     android:textSize="22sp"
                     android:textStyle="bold"
-                    android:textColor="#1A1A1A"
-                    android:textColorHint="#9E9E9E"
+                    android:textColor="#FFFFFF"
+                    android:textColorHint="#E3F2FD"
                     android:paddingTop="20dp"
                     android:paddingBottom="20dp"
-                    android:paddingStart="16dp"
-                    android:paddingEnd="16dp"
+                    android:paddingStart="0dp"
+                    android:paddingEnd="0dp"
                     android:letterSpacing="0.1"
                     android:imeOptions="actionDone"
-                    android:elevation="2dp" />
+                    android:elevation="2dp"
+                    android:textCursorDrawable="@null"
+                    android:background="@drawable/bg_input_rounded_blue"
+                    android:textDirection="ltr" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 
-    </LinearLayout>    <!-- Multiple Vehicle Button -->
-    <TextView
-        android:id="@+id/btnBanyakKendaraan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_horizontal"
-        android:layout_marginBottom="40dp"
-        android:text="Kendaraan Lebih dari 1?"
-        android:textColor="@color/blue"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        android:padding="12dp"
-        android:background="?android:attr/selectableItemBackground"
-        android:clickable="true"
-        android:focusable="true" />
+    </LinearLayout>
 
     <!-- Save Button -->
     <com.google.android.material.button.MaterialButton

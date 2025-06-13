@@ -5,6 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:backgroundTintMode="add"
+    android:background="#f5f5f5f5"
     android:fillViewport="true">
 
     <LinearLayout
@@ -12,7 +13,7 @@
         android:layout_height="0dp"
         android:background="#f5f5f5"
         android:orientation="vertical"
-        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintBottom_toTopOf="@+id/frameLayout"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent">
@@ -88,5 +89,31 @@
 
 
     </LinearLayout>
+
+    <FrameLayout
+
+        android:id="@+id/frameLayout"
+        android:layout_width="match_parent"
+        android:layout_height="90dp"
+        android:background="@color/blue"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/btnBayar"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/linearLayout"
+            android:layout_marginHorizontal="16dp"
+            android:layout_marginTop="20dp"
+            android:background="@drawable/bg_button_white"
+            android:padding="12dp"
+            android:text="Lanjutkan Pembayaran"
+            android:textColor="#3D59F4"
+            android:textStyle="bold"
+            app:backgroundTint="@null" />
+
+    </FrameLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
