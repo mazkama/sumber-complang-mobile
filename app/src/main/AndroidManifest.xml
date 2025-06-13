@@ -135,6 +135,15 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <!-- ValidasiTiketActivity sebagai aktivitas utama -->
+        <activity
+            android:name=".ValidasiTiketActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
+        </activity>
+
         <activity android:name=".WebViewActivity" />
         <activity android:name=".DetailTransaksiActivity" />
         <activity android:name=".DetailKolamActivity" />

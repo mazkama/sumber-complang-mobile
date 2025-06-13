@@ -78,7 +78,7 @@ class DetailTransaksiActivity : AppCompatActivity() {
 
                             // Cek status transaksi, hentikan polling jika status final
                             val status = data.status.lowercase()
-                            if (status == "divalidasi" || status == "gagal" || status == "dibatalkan") {
+                            if (status == "selesai" || status == "gagal" || status == "dibatalkan") {
                                 handler.removeCallbacks(refreshRunnable)
                             }
                         }

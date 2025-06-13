@@ -13,6 +13,7 @@ import com.febrivio.sumbercomplang.model.RegisterResponse
 import com.febrivio.sumbercomplang.model.RiwayatTransaksiTiketResponse
 import com.febrivio.sumbercomplang.model.TiketRequest
 import com.febrivio.sumbercomplang.model.TiketResponse
+import com.febrivio.sumbercomplang.model.TiketValidationRequest
 import com.febrivio.sumbercomplang.model.TiketValidationResponse
 import com.febrivio.sumbercomplang.model.TransaksiTiketRequest
 import com.febrivio.sumbercomplang.model.TransaksiTiketResponse
@@ -108,8 +109,8 @@ interface ApiService {
     fun cancelTransaction(@Path("orderId") orderId: String): Call<ResponseBody>
 
 
-    @GET("tiket/used/{orderId}")
-    fun validateTiket(@Path("orderId") orderId: String): Call<TiketValidationResponse>
+    @POST("tiket/validate-partial")
+    fun validateTickets(@Body request: TiketValidationRequest): Call<TiketValidationResponse>
 
     @PUT("profile")
     fun updateProfile(

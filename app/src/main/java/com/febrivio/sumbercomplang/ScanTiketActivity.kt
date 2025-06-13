@@ -34,6 +34,7 @@ import android.view.View
 import android.view.Window
 import androidx.appcompat.app.AlertDialog
 import com.febrivio.sumbercomplang.model.TiketValidationResponse
+import com.febrivio.sumbercomplang.model.TransaksiTiketResponse
 import com.febrivio.sumbercomplang.network.ApiClient
 import com.febrivio.sumbercomplang.network.ApiClient.ApiServiceAuth
 import com.febrivio.sumbercomplang.services.SessionManager
@@ -238,132 +239,85 @@ class ScanTiketActivity : AppCompatActivity() {
         super.onDestroy()
         cameraExecutor.shutdown()
     }
-
+ 
     private fun validateTicket(orderId: String) {
         try {
-            // Menggunakan SessionManager dan ApiServiceAuth untuk memanggil endpoint validasi tiket
+            // Show loading indicator
+            runOnUiThread {
+                b.progressIndicator?.visibility = View.VISIBLE
+                // If you don't have a progress indicator, add one to your layout
+            }
+            
+            // Get the user token
             val token = SessionManager(this).getToken()
             val apiService = ApiServiceAuth(this, token)
             
-            // Buat panggilan API
-            val call = apiService.validateTiket(orderId)
-            
-            // Eksekusi panggilan API secara asynchronous
-            call.enqueue(object : Callback<TiketValidationResponse> {
-                override fun onResponse(call: Call<TiketValidationResponse>, response: Response<TiketValidationResponse>) {
-                    // Vibrate the device for tactile feedback
-                    vibratePhone()
+            // First, fetch transaction details
+            apiService.getTransaksiDetail(orderId).enqueue(object : Callback<TransaksiTiketResponse> {
+                override fun onResponse(call: Call<TransaksiTiketResponse>, response: Response<TransaksiTiketResponse>) {
+                    b.progressIndicator?.visibility = View.GONE
                     
-                    if (response.isSuccessful) {
-                        val validationResponse = response.body()
+                    if (response.isSuccessful && response.body() != null) {
+                        val transactionResponse = response.body()!!
                         
-                        // Debug log untuk melihat response
-                        Log.d(TAG, "Response status: ${validationResponse?.status}")
-                        Log.d(TAG, "Response message: ${validationResponse?.message}")
-                        
-                        // Cek apakah pesan mengandung kata "berhasil" sebagai indikator sukses
-                        val message = validationResponse?.message ?: ""
-                        val isSuccess = validationResponse?.status == true || 
-                                       message.contains("berhasil", ignoreCase = true) ||
-                                       message.contains("divalidasi", ignoreCase = true)
-                        
-                        if (isSuccess) {
-                            // Validasi berhasil - gunakan showSuccessDialog
-                            showSuccessDialog("Sukses", "Tiket berhasil divalidasi")
+                        // Check if we got valid data
+                        if (transactionResponse.success && transactionResponse.data != null) {
+                            // Vibrate for success feedback
+                            vibratePhone()
                             
-                            // Return result ke activity sebelumnya
-                            val intent = Intent()
-                            intent.putExtra("QR_RESULT", orderId)
-                            intent.putExtra("VALIDATION_SUCCESS", true)
-                            setResult(Activity.RESULT_OK, intent)
+                            // Get transaction data
+                            val transaksiData = transactionResponse.data
                             
-                            // Reset flag setelah beberapa detik agar bisa scan lagi
+                            // Navigate to ValidasiTiketActivity with the transaction data
+                            val intent = Intent(this@ScanTiketActivity, ValidasiTiketActivity::class.java)
+                            intent.putExtra("transaksi", transaksiData)
+                            startActivity(intent)
+                            
+                            // Optionally finish this activity if you don't want to return to scanner
+                            // finish()
+                            
+                            // Reset flag after delay
                             b.root.postDelayed({
                                 isProcessingQR = false
                             }, 3000)
                         } else {
-                            // Validasi gagal dengan status false dari server
-                            val errorMessage = validationResponse?.message ?: "Gagal validasi tiket"
-                            showErrorDialog("Validasi Gagal", errorMessage)
-                            
-                            // Return result ke activity sebelumnya
-                            val intent = Intent()
-                            intent.putExtra("QR_RESULT", orderId)
-                            intent.putExtra("VALIDATION_SUCCESS", false)
-                            setResult(Activity.RESULT_OK, intent)
-                            
-                            // Reset flag setelah beberapa detik agar bisa scan lagi
-                            b.root.postDelayed({
-                                isProcessingQR = false
-                            }, 3000)
+                            // Transaction data not valid
+                            showErrorDialog("Invalid Transaction", transactionResponse.message)
+                            isProcessingQR = false
                         }
                     } else {
-                        try {
-                            // Respons error dari server
-                            if (response.code() == 400) {
-                                // Special handling for HTTP 400 - Ticket already validated
-                                showTicketAlreadyValidatedDialog()
-                            } else {
-                                // Other HTTP errors
-                                val errorCode = response.code()
-                                val errorBody = try {
-                                    response.errorBody()?.string() ?: "No response body"
-                                } catch (e: Exception) {
-                                    "Error reading response: ${e.message}"
-                                }
-                                showErrorDialog("Server Error", "Error $errorCode: $errorBody")
-                            }
-                            
-                            // Return result ke activity sebelumnya
-                            val intent = Intent()
-                            intent.putExtra("QR_RESULT", orderId)
-                            intent.putExtra("VALIDATION_SUCCESS", false)
-                            setResult(Activity.RESULT_OK, intent)
+                        // Handle error response
+                        val errorMessage = try {
+                            response.errorBody()?.string() ?: "Unknown error"
                         } catch (e: Exception) {
-                            Log.e(TAG, "Error handling HTTP error response", e)
-                            showErrorDialog("Error", "Terjadi kesalahan: ${e.message}")
-                        } finally {
-                            // Reset flag setelah beberapa detik agar bisa scan lagi
-                            b.root.postDelayed({
-                                isProcessingQR = false
-                            }, 3000)
+                            "Error reading response: ${e.message}"
                         }
+                        
+                        if (response.code() == 404) {
+                            showErrorDialog("Invalid QR Code", "Tiket tidak ditemukan")
+                        } else {
+                            showErrorDialog("Server Error", "Error ${response.code()}: $errorMessage")
+                        }
+                        
+                        isProcessingQR = false
                     }
                 }
                 
-                override fun onFailure(call: Call<TiketValidationResponse>, t: Throwable) {
-                    // Vibrate the device for tactile feedback
-                    vibratePhone()
+                override fun onFailure(call: Call<TransaksiTiketResponse>, t: Throwable) {
+                    b.progressIndicator?.visibility = View.GONE
                     
-                    // Error jaringan atau exception lainnya
-                    Log.e(TAG, "Error validating ticket", t)
+                    // Error handling for network failures
+                    Log.e(TAG, "Error fetching transaction details", t)
+                    showErrorDialog("Network Error", "Gagal mengambil data transaksi: ${t.message}")
                     
-                    // Show error dialog with network error details
-                    showErrorDialog("Network Error", "Gagal terhubung ke server: ${t.message}")
-                    
-                    // Return result ke activity sebelumnya meskipun error
-                    val intent = Intent()
-                    intent.putExtra("QR_RESULT", orderId)
-                    intent.putExtra("VALIDATION_SUCCESS", false)
-                    setResult(Activity.RESULT_OK, intent)
-                    
-                    // Reset flag setelah beberapa detik agar bisa scan lagi
-                    b.root.postDelayed({
-                        isProcessingQR = false
-                    }, 3000)
+                    // Reset processing flag
+                    isProcessingQR = false
                 }
             })
             
         } catch (e: Exception) {
-            Log.e(TAG, "Error starting validation process", e)
-            
-            // Vibrate the device for tactile feedback
-            vibratePhone()
-            
-            // Show error dialog
+            Log.e(TAG, "Error in validateTicket", e)
             showErrorDialog("Application Error", "Terjadi kesalahan: ${e.message}")
-            
-            // Reset processing flag to allow another scan
             isProcessingQR = false
         }
     }
