@@ -1,5 +1,6 @@
 package com.febrivio.sumbercomplang
 
+import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import com.febrivio.sumbercomplang.adapter.TiketAdapter
@@ -58,7 +59,7 @@ class TiketOfflineActivity : AppCompatActivity(){
                     if (!kolamList.isNullOrEmpty()) {
                         // Inisialisasi adapter dengan onItemClick
                         tiketAdapter = TiketAdapter(kolamList) { tiket: Tiket ->
-                            val intent = Intent(this@TiketActivity, FormTiketActivity::class.java)
+                            val intent = Intent(this@TiketOfflineActivity, FormTiketActivity::class.java)
                             // Kirim data jika perlu
                             intent.putExtra("id_tiket", tiket.id_tiket)
                             intent.putExtra("nama_tiket", tiket.nama_tiket)
@@ -73,14 +74,14 @@ class TiketOfflineActivity : AppCompatActivity(){
                         b.rvTiketKolam.adapter = tiketAdapter
                     } else {
                         Toast.makeText(
-                            this@TiketActivity,
+                            this@TiketOfflineActivity,
                             "Data tiket kolam kosong",
                             Toast.LENGTH_SHORT
                         ).show()
                     }
                 } else {
                     Toast.makeText(
-                        this@TiketActivity,
+                        this@TiketOfflineActivity,
                         "Gagal mengambil data (${response.code()})",
                         Toast.LENGTH_SHORT
                     ).show()
@@ -92,7 +93,7 @@ class TiketOfflineActivity : AppCompatActivity(){
                 b.swipeRefreshLayout.isRefreshing = false
 
                 Toast.makeText(
-                    this@TiketActivity,
+                    this@TiketOfflineActivity,
                     "Terjadi kesalahan: ${t.localizedMessage}",
                     Toast.LENGTH_SHORT
                 ).show()
