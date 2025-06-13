@@ -16,7 +16,7 @@ import com.google.android.material.bottomsheet.BottomSheetDialog
 
 class TransaksiTiketAdapter(
     private val listTiket: List<Tiket>,
-    private val onPaymentMethodChanged: (String) -> Unit,
+    private val paymentMethod: String, // Changed: direct payment method parameter
     private val onQuantityChange: (List<Tiket>) -> Unit
 ) : RecyclerView.Adapter<RecyclerView.ViewHolder>() {
 
@@ -27,7 +27,7 @@ class TransaksiTiketAdapter(
     )
 
     private val selectedTickets = mutableMapOf<Int, TicketInfo>()
-    private var selectedPaymentMethod: String = "E-Wallet"
+    private var selectedPaymentMethod: String = paymentMethod // Initialize with provided method
 
     companion object {
         private const val ITEM_TIKET = 0
@@ -110,22 +110,11 @@ class TransaksiTiketAdapter(
             val formattedTotal = NumberFormat.getNumberInstance(Locale("in", "ID")).format(total)
             holder.binding.tvTotalNominal.text = "Rp $formattedTotal"
 
-            // SET TEKS BUTTON BERDASARKAN STATE
+            // SET TEKS BUTTON BERDASARKAN STATE (no click listener)
             holder.binding.btnMetodePembayaran.text = selectedPaymentMethod
-
-            holder.binding.btnMetodePembayaran.setOnClickListener { view ->
-                val context = view.context
-                val options = arrayOf("Tunai", "E-Wallet")
-                AlertDialog.Builder(context)
-                    .setTitle("Pilih Metode Pembayaran")
-                    .setItems(options) { _, which ->
-                        selectedPaymentMethod = options[which]
-                        onPaymentMethodChanged(selectedPaymentMethod)
-                        notifyItemChanged(itemCount - 1)
-                    }
-                    .setNegativeButton("Batal", null)
-                    .show()
-            }
+            
+            // Remove the click listener for payment method selection
+            // The button will just display the payment method
         }
     }
 

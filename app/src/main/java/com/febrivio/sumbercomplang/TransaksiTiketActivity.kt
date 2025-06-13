@@ -31,9 +31,8 @@ class TransaksiTiketActivity : AppCompatActivity() {
     private lateinit var b: ActivityTransaksiTiketBinding
     private lateinit var transaksiTiketAdapter: TransaksiTiketAdapter
     private var selectedTiketList: List<Tiket> = emptyList()
-    private var selectedPaymentMethod: String = "E-Wallet"
-    private var jenisTiket : String =  ""
-
+    private var selectedPaymentMethod: String = "Tunai" // Changed: Set default directly
+    private var jenisTiket : String = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -41,6 +40,9 @@ class TransaksiTiketActivity : AppCompatActivity() {
         setContentView(b.root)
 
         jenisTiket = intent.getStringExtra("jenis_tiket").toString()
+
+        // Set payment method based on ticket type if needed
+        selectedPaymentMethod = "E-Wallet"
 
         if (jenisTiket == "kolam") b.tvPembelianTiket.setText("Tiket Kolam Renang")
         else b.tvPembelianTiket.setText("Tiket Parkir")
@@ -63,7 +65,6 @@ class TransaksiTiketActivity : AppCompatActivity() {
         b.btnBack.setOnClickListener {
             finish()
         }
-
     }
 
     private fun getTiketData(jenis : String) {
@@ -77,6 +78,7 @@ class TransaksiTiketActivity : AppCompatActivity() {
                     if (tiketList.isNotEmpty()) {
                         transaksiTiketAdapter = TransaksiTiketAdapter(
                             listTiket = tiketList,
+                            paymentMethod = selectedPaymentMethod, // Changed: Pass the preset method
                             onQuantityChange = { updatedList ->
                                 selectedTiketList = updatedList
 
@@ -85,9 +87,6 @@ class TransaksiTiketActivity : AppCompatActivity() {
                                     val subtotal = tiket.harga * tiket.jumlah
                                     total += subtotal
                                 }
-                            },
-                            onPaymentMethodChanged = { newMethod ->
-                                selectedPaymentMethod = newMethod
                             }
                         )
 
