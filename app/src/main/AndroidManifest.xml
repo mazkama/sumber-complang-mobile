@@ -126,6 +126,15 @@
             android:screenOrientation="portrait">
         </activity>
 
+        <!-- TiketOfflineActivity sebagai aktivitas utama -->
+        <activity
+            android:name=".TiketOfflineActivity"
+            android:exported="false"
+            android:launchMode="singleTop"
+            android:configChanges="orientation"
+            android:screenOrientation="portrait">
+        </activity>
+
         <activity android:name=".WebViewActivity" />
         <activity android:name=".DetailTransaksiActivity" />
         <activity android:name=".DetailKolamActivity" />

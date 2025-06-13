@@ -1,9 +1,7 @@
 package com.febrivio.sumbercomplang
 
-import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
-import androidx.recyclerview.widget.LinearLayoutManager
 import com.febrivio.sumbercomplang.adapter.TiketAdapter
 import com.febrivio.sumbercomplang.databinding.ActivityTiketBinding
 import com.febrivio.sumbercomplang.model.Tiket
@@ -12,9 +10,10 @@ import com.febrivio.sumbercomplang.network.ApiClient
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import androidx.appcompat.app.AppCompatActivity
+import androidx.recyclerview.widget.LinearLayoutManager
 
-class TiketActivity : AppCompatActivity() {
-
+class TiketOfflineActivity : AppCompatActivity(){
     private lateinit var b: ActivityTiketBinding
     private lateinit var tiketAdapter: TiketAdapter
     private var jenisTiket : String =  ""
@@ -37,12 +36,6 @@ class TiketActivity : AppCompatActivity() {
 
         b.btnBack.setOnClickListener {
             finish()
-        }
-
-        b.btnPembelianTiket.setOnClickListener {
-            val intent = Intent(thisParent, TiketOfflineActivity::class.java)
-            intent.putExtra("jenis_tiket", "kolam")
-            startActivity(intent)
         }
 
         // Fetch data on first load
