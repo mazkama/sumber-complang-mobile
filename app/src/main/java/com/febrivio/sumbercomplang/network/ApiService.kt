@@ -1,5 +1,7 @@
 package com.febrivio.sumbercomplang.network
 
+import com.febrivio.sumbercomplang.model.ChangePasswordRequest
+import com.febrivio.sumbercomplang.model.ChangePasswordResponse
 import com.febrivio.sumbercomplang.model.DashboardResponse
 import com.febrivio.sumbercomplang.model.Kolam
 import com.febrivio.sumbercomplang.model.KolamListResponse
@@ -116,6 +118,11 @@ interface ApiService {
     fun updateProfile(
         @Body profileData: ProfileUpdateRequest
     ): Call<ProfileUpdateResponse>
+
+    @POST("change-password")
+    fun changePassword(
+        @Body changePasswordData: ChangePasswordRequest
+    ): Call<ChangePasswordResponse>
 
     @Streaming
     @GET("transaksi/export/monthly")

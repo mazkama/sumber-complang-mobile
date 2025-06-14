@@ -8,8 +8,10 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import com.febrivio.sumbercomplang.ChangePasswordActivity
 import com.febrivio.sumbercomplang.LoginActivity
 import com.febrivio.sumbercomplang.MainActivity
+import com.febrivio.sumbercomplang.ScanTiketActivity
 import com.febrivio.sumbercomplang.databinding.FragmentProfilBinding
 import com.febrivio.sumbercomplang.model.ProfileUpdateRequest
 import com.febrivio.sumbercomplang.model.ProfileUpdateResponse
@@ -74,8 +76,14 @@ class FragmentProfil : Fragment() {
         }
 
         // Edit Profile button
-        b.btnChangePassword.setOnClickListener {
+        b.btnChangeData.setOnClickListener {
             toggleEditMode()
+        }
+
+        // Change Password button
+        b.btnChangePassword.setOnClickListener {
+            val intent = Intent(thisParent, ChangePasswordActivity::class.java)
+            startActivity(intent)
         }
 
         // Save Changes button
