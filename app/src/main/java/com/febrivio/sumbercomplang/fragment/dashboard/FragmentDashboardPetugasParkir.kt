@@ -85,7 +85,7 @@ class FragmentDashboardPetugasParkir :  Fragment() {
     private fun setupClickListeners() {
         b.cardTiket.setOnClickListener {
             val intent = Intent(thisParent, TiketActivity::class.java)
-            intent.putExtra("jenis_tiket", "Parkir")
+            intent.putExtra("jenis_tiket", "parkir")
             startActivity(intent)
         }
 
