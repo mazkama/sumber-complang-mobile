@@ -33,6 +33,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.Window
 import androidx.appcompat.app.AlertDialog
+import com.febrivio.sumbercomplang.model.TiketDetailResponse
 import com.febrivio.sumbercomplang.model.TiketValidationResponse
 import com.febrivio.sumbercomplang.model.TransaksiTiketResponse
 import com.febrivio.sumbercomplang.network.ApiClient
@@ -245,11 +246,12 @@ class ScanTiketActivity : AppCompatActivity() {
             // Show loading indicator
             runOnUiThread {
                 b.progressIndicator?.visibility = View.VISIBLE
-                // If you don't have a progress indicator, add one to your layout
             }
             
             // Get the user token
-            val token = SessionManager(this).getToken()
+            val sessionManager = SessionManager(this)
+            val token = sessionManager.getToken()
+            val userRole = sessionManager.getUserRole() // Make sure this method exists in your SessionManager
             val apiService = ApiServiceAuth(this, token)
             
             // First, fetch transaction details
@@ -262,24 +264,33 @@ class ScanTiketActivity : AppCompatActivity() {
                         
                         // Check if we got valid data
                         if (transactionResponse.success && transactionResponse.data != null) {
-                            // Vibrate for success feedback
-                            vibratePhone()
-                            
-                            // Get transaction data
                             val transaksiData = transactionResponse.data
                             
-                            // Navigate to ValidasiTiketActivity with the transaction data
-                            val intent = Intent(this@ScanTiketActivity, ValidasiTiketActivity::class.java)
-                            intent.putExtra("transaksi", transaksiData)
-                            startActivity(intent)
+                            // Check if user has permission to validate these tickets
+                            val hasPermission = checkUserPermission(transaksiData.tiketDetails, userRole.toString())
                             
-                            // Optionally finish this activity if you don't want to return to scanner
-                            // finish()
-                            
-                            // Reset flag after delay
-                            b.root.postDelayed({
-                                isProcessingQR = false
+                            if (hasPermission) {
+                                // Vibrate for success feedback
+                                vibratePhone()
+                                
+                                // Navigate to ValidasiTiketActivity with the transaction data
+                                val intent = Intent(this@ScanTiketActivity, ValidasiTiketActivity::class.java)
+                                intent.putExtra("transaksi", transaksiData)
+                                startActivity(intent)
+                                
+                                // Reset flag after delay
+                                b.root.postDelayed({
+                                    isProcessingQR = false
                             }, 3000)
+                            } else {
+                                // User doesn't have permission to validate these tickets
+                                Toast.makeText(
+                                    this@ScanTiketActivity, 
+                                    "Anda tidak memiliki akses untuk memvalidasi jenis tiket ini", 
+                                    Toast.LENGTH_LONG
+                                ).show()
+                                isProcessingQR = false
+                            }
                         } else {
                             // Transaction data not valid
                             showErrorDialog("Invalid Transaction", transactionResponse.message)
@@ -305,12 +316,8 @@ class ScanTiketActivity : AppCompatActivity() {
                 
                 override fun onFailure(call: Call<TransaksiTiketResponse>, t: Throwable) {
                     b.progressIndicator?.visibility = View.GONE
-                    
-                    // Error handling for network failures
                     Log.e(TAG, "Error fetching transaction details", t)
                     showErrorDialog("Network Error", "Gagal mengambil data transaksi: ${t.message}")
-                    
-                    // Reset processing flag
                     isProcessingQR = false
                 }
             })
@@ -319,6 +326,23 @@ class ScanTiketActivity : AppCompatActivity() {
             Log.e(TAG, "Error in validateTicket", e)
             showErrorDialog("Application Error", "Terjadi kesalahan: ${e.message}")
             isProcessingQR = false
+        }
+    }
+    
+    /**
+     * Check if user has permission to validate the tickets based on ticket types and user role
+     */
+    private fun checkUserPermission(tickets: List<TiketDetailResponse>, userRole: String): Boolean {
+        // If there are no tickets, no need to validate
+        if (tickets.isEmpty()) return false
+        
+        // Get unique ticket types from the transaction
+        val ticketTypes = tickets.map { it.jenisTiket.lowercase() }.toSet()
+        
+        return when (userRole.lowercase()) { 
+            "petugas_parkir" -> ticketTypes.all { it == "parkir" } // Parking staff can only validate parking tickets
+            "petugas_kolam" -> ticketTypes.all { it == "kolam" } // Pool staff can only validate pool tickets
+            else -> false // Unknown roles don't have permission
         }
     }
     
