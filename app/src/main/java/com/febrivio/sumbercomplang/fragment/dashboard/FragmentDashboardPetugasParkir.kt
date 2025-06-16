@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
+import com.febrivio.sumbercomplang.ChangePasswordActivity
 import com.febrivio.sumbercomplang.DetailTransaksiActivity
 import com.febrivio.sumbercomplang.KolamActivity
 import com.febrivio.sumbercomplang.LoginActivity
@@ -95,10 +96,8 @@ class FragmentDashboardPetugasParkir :  Fragment() {
         }
 
         b.cardPengaturan.setOnClickListener {
-            session.logout()
-            val intent = Intent(thisParent, LoginActivity::class.java)
+            val intent = Intent(thisParent, ChangePasswordActivity::class.java)
             startActivity(intent)
-            thisParent.finish()
         }
     }
 

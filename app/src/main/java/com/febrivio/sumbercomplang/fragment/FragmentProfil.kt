@@ -80,12 +80,6 @@ class FragmentProfil : Fragment() {
             toggleEditMode()
         }
 
-        // Change Password button
-        b.btnChangePassword.setOnClickListener {
-            val intent = Intent(thisParent, ChangePasswordActivity::class.java)
-            startActivity(intent)
-        }
-
         // Save Changes button
         b.btnSaveChanges.setOnClickListener {
             saveChanges()
