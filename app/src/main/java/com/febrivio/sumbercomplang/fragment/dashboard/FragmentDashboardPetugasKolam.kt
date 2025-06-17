@@ -87,14 +87,14 @@ class FragmentDashboardPetugasKolam : Fragment() {
     }
 
     private fun setupClickListeners() {
-        b.cardKolam.setOnClickListener {
-            val intent = Intent(thisParent, KolamActivity::class.java)
-            startActivity(intent)
-        }
-
         b.cardTiket.setOnClickListener {
             val intent = Intent(thisParent, TiketActivity::class.java)
             intent.putExtra("jenis_tiket", "kolam")
+            startActivity(intent)
+        }
+
+        b.cardKolam.setOnClickListener {
+            val intent = Intent(thisParent, KolamActivity::class.java)
             startActivity(intent)
         }
 
