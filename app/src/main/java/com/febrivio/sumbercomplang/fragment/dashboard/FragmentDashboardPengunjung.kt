@@ -83,69 +83,75 @@ class FragmentDashboardPengunjung : Fragment() {
         return v
     }
 
+    private var countThisMonth: CountThisMonthResponse? = null
+
     private fun getKolamData() {
         b.swipeRefreshLayout.isRefreshing = true
 
-        // Ambil data kolam dari API
-        ApiClient.instance.getKolam().enqueue(object : Callback<KolamListResponse> {
+        // Ambil data count-this-month SEKALI SAJA
+        ApiClient.instance.getCountThisMonth().enqueue(object : Callback<CountThisMonthResponse> {
             override fun onResponse(
-                call: Call<KolamListResponse>,
-                response: Response<KolamListResponse>
+                call: Call<CountThisMonthResponse>,
+                response: Response<CountThisMonthResponse>
             ) {
-                b.swipeRefreshLayout.isRefreshing = false
                 if (response.isSuccessful && response.body() != null) {
-                    val kolamList = response.body()!!.data
+                    countThisMonth = response.body()
 
-                    kolamAdapter = KolamAdapter(kolamList) { kolam ->
-                        // Panggil endpoint count-this-month
-                        ApiClient.instance.getCountThisMonth().enqueue(object : Callback<CountThisMonthResponse> {
-                            override fun onResponse(
-                                call: Call<CountThisMonthResponse>,
-                                response: Response<CountThisMonthResponse>
-                            ) {
-                                if (response.isSuccessful && response.body() != null) {
-                                    val countData = response.body()!!
+                    // Setelah dapat count, ambil data kolam
+                    ApiClient.instance.getKolam().enqueue(object : Callback<KolamListResponse> {
+                        override fun onResponse(
+                            call: Call<KolamListResponse>,
+                            response: Response<KolamListResponse>
+                        ) {
+                            b.swipeRefreshLayout.isRefreshing = false
+                            if (response.isSuccessful && response.body() != null) {
+                                val kolamList = response.body()!!.data
+
+                                kolamAdapter = KolamAdapter(kolamList) { kolam ->
+                                    val countData = countThisMonth
                                     val intent = Intent(thisParent, DetailKolamActivity::class.java)
                                     intent.putExtra("kolam", kolam)
 
                                     // Tentukan label dan count sesuai nama kolam
                                     when (kolam.nama?.lowercase()) {
                                         "kolam anak" -> {
-                                            intent.putExtra("bulan", countData.bulan)
-                                            intent.putExtra("count", countData.total_kolam_anak)
+                                            intent.putExtra("bulan", countData?.bulan)
+                                            intent.putExtra("count", countData?.total_kolam_anak ?: 0)
                                         }
                                         "kolam dewasa" -> {
-                                            intent.putExtra("bulan", countData.bulan)
-                                            intent.putExtra("count", countData.total_kolam_dewasa)
+                                            intent.putExtra("bulan", countData?.bulan)
+                                            intent.putExtra("count", countData?.total_kolam_dewasa ?: 0)
                                         }
                                         "kolam alam complang" -> {
-                                            intent.putExtra("bulan", countData.bulan)
-                                            intent.putExtra("count", countData.total_parkir)
+                                            intent.putExtra("bulan", countData?.bulan)
+                                            intent.putExtra("count", countData?.total_parkir ?: 0)
                                         }
                                         else -> {
-                                            intent.putExtra("bulan", countData.bulan)
+                                            intent.putExtra("bulan", countData?.bulan)
                                             intent.putExtra("count", 0)
                                         }
                                     }
                                     startActivity(intent)
-                                } else {
-                                    Toast.makeText(thisParent, "Gagal mengambil data pengunjung", Toast.LENGTH_SHORT).show()
                                 }
-                            }
 
-                            override fun onFailure(call: Call<CountThisMonthResponse>, t: Throwable) {
-                                Toast.makeText(thisParent, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                                b.rvKolam.adapter = kolamAdapter
+                            } else {
+                                Toast.makeText(thisParent, "Gagal mengambil data kolam", Toast.LENGTH_SHORT).show()
                             }
-                        })
-                    }
+                        }
 
-                    b.rvKolam.adapter = kolamAdapter
+                        override fun onFailure(call: Call<KolamListResponse>, t: Throwable) {
+                            b.swipeRefreshLayout.isRefreshing = false
+                            Toast.makeText(thisParent, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                        }
+                    })
                 } else {
-                    Toast.makeText(thisParent, "Gagal mengambil data kolam", Toast.LENGTH_SHORT).show()
+                    b.swipeRefreshLayout.isRefreshing = false
+                    Toast.makeText(thisParent, "Gagal mengambil data pengunjung", Toast.LENGTH_SHORT).show()
                 }
             }
 
-            override fun onFailure(call: Call<KolamListResponse>, t: Throwable) {
+            override fun onFailure(call: Call<CountThisMonthResponse>, t: Throwable) {
                 b.swipeRefreshLayout.isRefreshing = false
                 Toast.makeText(thisParent, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
