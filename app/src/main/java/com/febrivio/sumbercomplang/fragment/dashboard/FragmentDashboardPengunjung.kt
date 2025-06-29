@@ -19,6 +19,7 @@ import com.febrivio.sumbercomplang.adapter.KolamAdapter
 import com.febrivio.sumbercomplang.databinding.FragmentBerandaPengunjungBinding
 import com.febrivio.sumbercomplang.model.KolamListResponse
 import com.febrivio.sumbercomplang.model.CountThisMonthResponse
+import com.febrivio.sumbercomplang.model.Kolam
 import com.febrivio.sumbercomplang.network.ApiClient
 import com.febrivio.sumbercomplang.services.SessionManager
 import retrofit2.Call
@@ -52,6 +53,8 @@ class FragmentDashboardPengunjung : Fragment() {
         // Set up SwipeRefreshLayout
         b.swipeRefreshLayout.setOnRefreshListener {
             // Call getKolamData to refresh data
+            countThisMonth = null
+            kolamListCache = null
             getKolamData()
         }
 
@@ -84,11 +87,17 @@ class FragmentDashboardPengunjung : Fragment() {
     }
 
     private var countThisMonth: CountThisMonthResponse? = null
+    private var kolamListCache: List<Kolam>? = null
 
     private fun getKolamData() {
+        // Jika data sudah ada, langsung tampilkan tanpa request ulang
+        if (countThisMonth != null && kolamListCache != null) {
+            setKolamAdapter()
+            return
+        }
+
         b.swipeRefreshLayout.isRefreshing = true
 
-        // Ambil data count-this-month SEKALI SAJA
         ApiClient.instance.getCountThisMonth().enqueue(object : Callback<CountThisMonthResponse> {
             override fun onResponse(
                 call: Call<CountThisMonthResponse>,
@@ -96,8 +105,6 @@ class FragmentDashboardPengunjung : Fragment() {
             ) {
                 if (response.isSuccessful && response.body() != null) {
                     countThisMonth = response.body()
-
-                    // Setelah dapat count, ambil data kolam
                     ApiClient.instance.getKolam().enqueue(object : Callback<KolamListResponse> {
                         override fun onResponse(
                             call: Call<KolamListResponse>,
@@ -105,41 +112,12 @@ class FragmentDashboardPengunjung : Fragment() {
                         ) {
                             b.swipeRefreshLayout.isRefreshing = false
                             if (response.isSuccessful && response.body() != null) {
-                                val kolamList = response.body()!!.data
-
-                                kolamAdapter = KolamAdapter(kolamList) { kolam ->
-                                    val countData = countThisMonth
-                                    val intent = Intent(thisParent, DetailKolamActivity::class.java)
-                                    intent.putExtra("kolam", kolam)
-
-                                    // Tentukan label dan count sesuai nama kolam
-                                    when (kolam.nama?.lowercase()) {
-                                        "kolam anak" -> {
-                                            intent.putExtra("bulan", countData?.bulan)
-                                            intent.putExtra("count", countData?.total_kolam_anak ?: 0)
-                                        }
-                                        "kolam dewasa" -> {
-                                            intent.putExtra("bulan", countData?.bulan)
-                                            intent.putExtra("count", countData?.total_kolam_dewasa ?: 0)
-                                        }
-                                        "kolam alam complang" -> {
-                                            intent.putExtra("bulan", countData?.bulan)
-                                            intent.putExtra("count", countData?.total_parkir ?: 0)
-                                        }
-                                        else -> {
-                                            intent.putExtra("bulan", countData?.bulan)
-                                            intent.putExtra("count", 0)
-                                        }
-                                    }
-                                    startActivity(intent)
-                                }
-
-                                b.rvKolam.adapter = kolamAdapter
+                                kolamListCache = response.body()!!.data
+                                setKolamAdapter()
                             } else {
                                 Toast.makeText(thisParent, "Gagal mengambil data kolam", Toast.LENGTH_SHORT).show()
                             }
                         }
-
                         override fun onFailure(call: Call<KolamListResponse>, t: Throwable) {
                             b.swipeRefreshLayout.isRefreshing = false
                             Toast.makeText(thisParent, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
@@ -150,12 +128,40 @@ class FragmentDashboardPengunjung : Fragment() {
                     Toast.makeText(thisParent, "Gagal mengambil data pengunjung", Toast.LENGTH_SHORT).show()
                 }
             }
-
             override fun onFailure(call: Call<CountThisMonthResponse>, t: Throwable) {
                 b.swipeRefreshLayout.isRefreshing = false
                 Toast.makeText(thisParent, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
             }
         })
+    }
+
+    private fun setKolamAdapter() {
+        val kolamList = kolamListCache ?: return
+        val countData = countThisMonth
+        kolamAdapter = KolamAdapter(kolamList) { kolam ->
+            val intent = Intent(thisParent, DetailKolamActivity::class.java)
+            intent.putExtra("kolam", kolam)
+            when (kolam.nama?.lowercase()) {
+                "kolam anak" -> {
+                    intent.putExtra("bulan", countData?.bulan)
+                    intent.putExtra("count", countData?.total_kolam_anak ?: 0)
+                }
+                "kolam dewasa" -> {
+                    intent.putExtra("bulan", countData?.bulan)
+                    intent.putExtra("count", countData?.total_kolam_dewasa ?: 0)
+                }
+                "kolam alam complang" -> {
+                    intent.putExtra("bulan", countData?.bulan)
+                    intent.putExtra("count", countData?.total_parkir ?: 0)
+                }
+                else -> {
+                    intent.putExtra("bulan", countData?.bulan)
+                    intent.putExtra("count", 0)
+                }
+            }
+            startActivity(intent)
+        }
+        b.rvKolam.adapter = kolamAdapter
     }
 
 }
