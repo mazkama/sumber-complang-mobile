@@ -72,8 +72,9 @@
                 android:layout_height="24dp"
                 android:layout_marginEnd="10dp"
                 android:src="@drawable/ic_person"
+                app:layout_constraintBottom_toBottomOf="@+id/tv_visitor_count"
                 app:layout_constraintEnd_toStartOf="@+id/tv_visitor_count"
-                app:layout_constraintTop_toTopOf="@id/tv_visitor_label"
+                app:layout_constraintTop_toTopOf="@+id/tv_visitor_count"
                 app:tint="@color/blue" />
 
             <TextView

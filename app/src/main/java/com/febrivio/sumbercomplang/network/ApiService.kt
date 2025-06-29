@@ -19,6 +19,7 @@ import com.febrivio.sumbercomplang.model.TiketValidationRequest
 import com.febrivio.sumbercomplang.model.TiketValidationResponse
 import com.febrivio.sumbercomplang.model.TransaksiTiketRequest
 import com.febrivio.sumbercomplang.model.TransaksiTiketResponse
+import com.febrivio.sumbercomplang.model.CountThisMonthResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -136,5 +137,8 @@ interface ApiService {
     fun getDashboardStatistics(
         @Query("jenis") jenis: String
     ): Call<DashboardResponse>
+
+    @GET("count-this-month")
+    fun getCountThisMonth(): Call<CountThisMonthResponse>
 
 }

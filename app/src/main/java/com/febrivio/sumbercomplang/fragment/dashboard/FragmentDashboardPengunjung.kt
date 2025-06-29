@@ -18,6 +18,7 @@ import com.febrivio.sumbercomplang.TransaksiTiketActivity
 import com.febrivio.sumbercomplang.adapter.KolamAdapter
 import com.febrivio.sumbercomplang.databinding.FragmentBerandaPengunjungBinding
 import com.febrivio.sumbercomplang.model.KolamListResponse
+import com.febrivio.sumbercomplang.model.CountThisMonthResponse
 import com.febrivio.sumbercomplang.network.ApiClient
 import com.febrivio.sumbercomplang.services.SessionManager
 import retrofit2.Call
@@ -85,22 +86,62 @@ class FragmentDashboardPengunjung : Fragment() {
     private fun getKolamData() {
         b.swipeRefreshLayout.isRefreshing = true
 
+        // Ambil data kolam dari API
         ApiClient.instance.getKolam().enqueue(object : Callback<KolamListResponse> {
-            override fun onResponse(call: Call<KolamListResponse>, response: Response<KolamListResponse>) {
+            override fun onResponse(
+                call: Call<KolamListResponse>,
+                response: Response<KolamListResponse>
+            ) {
                 b.swipeRefreshLayout.isRefreshing = false
-
                 if (response.isSuccessful && response.body() != null) {
                     val kolamList = response.body()!!.data
 
                     kolamAdapter = KolamAdapter(kolamList) { kolam ->
-                        val intent = Intent(thisParent, DetailKolamActivity::class.java)
-                        intent.putExtra("kolam", kolam)
-                        startActivity(intent)
+                        // Panggil endpoint count-this-month
+                        ApiClient.instance.getCountThisMonth().enqueue(object : Callback<CountThisMonthResponse> {
+                            override fun onResponse(
+                                call: Call<CountThisMonthResponse>,
+                                response: Response<CountThisMonthResponse>
+                            ) {
+                                if (response.isSuccessful && response.body() != null) {
+                                    val countData = response.body()!!
+                                    val intent = Intent(thisParent, DetailKolamActivity::class.java)
+                                    intent.putExtra("kolam", kolam)
+
+                                    // Tentukan label dan count sesuai nama kolam
+                                    when (kolam.nama?.lowercase()) {
+                                        "kolam anak" -> {
+                                            intent.putExtra("bulan", countData.bulan)
+                                            intent.putExtra("count", countData.total_kolam_anak)
+                                        }
+                                        "kolam dewasa" -> {
+                                            intent.putExtra("bulan", countData.bulan)
+                                            intent.putExtra("count", countData.total_kolam_dewasa)
+                                        }
+                                        "kolam alam complang" -> {
+                                            intent.putExtra("bulan", countData.bulan)
+                                            intent.putExtra("count", countData.total_parkir)
+                                        }
+                                        else -> {
+                                            intent.putExtra("bulan", countData.bulan)
+                                            intent.putExtra("count", 0)
+                                        }
+                                    }
+                                    startActivity(intent)
+                                } else {
+                                    Toast.makeText(thisParent, "Gagal mengambil data pengunjung", Toast.LENGTH_SHORT).show()
+                                }
+                            }
+
+                            override fun onFailure(call: Call<CountThisMonthResponse>, t: Throwable) {
+                                Toast.makeText(thisParent, "Error: ${t.message}", Toast.LENGTH_SHORT).show()
+                            }
+                        })
                     }
 
                     b.rvKolam.adapter = kolamAdapter
                 } else {
-                    Toast.makeText(thisParent, "Gagal mengambil data", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(thisParent, "Gagal mengambil data kolam", Toast.LENGTH_SHORT).show()
                 }
             }
 

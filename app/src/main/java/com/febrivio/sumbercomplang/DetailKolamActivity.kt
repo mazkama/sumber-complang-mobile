@@ -17,11 +17,15 @@ class DetailKolamActivity : AppCompatActivity() {
         setContentView(b.root)
 
         val kolam = intent.getSerializableExtra("kolam") as? Kolam
+        val bulan = intent.getStringExtra("bulan")
+        val count = intent.getIntExtra("count", 0)
 
+        b.tvVisitorLabel.text = "Pengunjung Bulan\n$bulan"
+        b.tvVisitorCount.text = count.toString()
         b.tvTitle.setText(kolam?.nama)
         b.tvDescription.setText(kolam?.deskripsi)
         b.tvDepth.setText("Luas: ${ kolam?.kedalaman?.toString() } m²" ?: "")
-        b.tvWidth.setText("Kedalaman: ${ kolam?.luas?.toString() } m²" ?: "")
+        b.tvWidth.setText("Kedalaman: ${ kolam?.luas?.toString() } Meter" ?: "")
         // Tampilkan gambar
         Picasso.get().load(kolam?.url_foto).into(b.ivPoolImage)
 
