@@ -254,7 +254,7 @@
                             android:layout_height="48dp"
                             android:background="@drawable/bg_edittext_rounded"
                             android:hint="Kategori"
-                            android:inputType="number"
+                            android:inputType="text"
                             android:paddingHorizontal="16dp"
                             android:textColor="@color/black"
                             android:textColorHint="@color/black" />

@@ -24,8 +24,8 @@ class DetailKolamActivity : AppCompatActivity() {
         b.tvVisitorCount.text = count.toString()
         b.tvTitle.setText(kolam?.nama)
         b.tvDescription.setText(kolam?.deskripsi)
-        b.tvDepth.setText("Luas: ${ kolam?.kedalaman?.toString() } m²" ?: "")
-        b.tvWidth.setText("Kedalaman: ${ kolam?.luas?.toString() } Meter" ?: "")
+        b.tvDepth.setText("Luas: ${ kolam?.luas?.toString() } m²" ?: "")
+        b.tvWidth.setText("Kedalaman: ${ kolam?.kedalaman?.toString() } Meter" ?: "")
         // Tampilkan gambar
         Picasso.get().load(kolam?.url_foto).into(b.ivPoolImage)
 
