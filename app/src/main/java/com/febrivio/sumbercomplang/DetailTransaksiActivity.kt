@@ -121,7 +121,7 @@ class DetailTransaksiActivity : AppCompatActivity() {
         when (transaksiData.status.lowercase()) {
             "menunggu" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_pending)
             "dibayar" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_success)
-            "divalidasi" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_validate)
+            "cekin" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_validate)
             "gagal", "dibatalkan" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_failed)
             "selesai" -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_finish)
             else -> binding.tvStatus.setBackgroundResource(R.drawable.bg_status_pending)
@@ -161,7 +161,7 @@ class DetailTransaksiActivity : AppCompatActivity() {
                 binding.stempelContainer.visibility = View.GONE
             }
 
-            "divalidasi" -> {
+            "cekin" -> {
                 val qrBitmap = generateQRCode(transaksiData.orderId)
                 binding.qrImageView.setImageBitmap(qrBitmap)
                 binding.qrImageView.visibility = View.VISIBLE

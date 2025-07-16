@@ -35,7 +35,7 @@ class RiwayatTransaksiAdapter(
                 val bgRes = when (item.status.lowercase()) {
                     "menunggu" -> com.febrivio.sumbercomplang.R.drawable.bg_status_pending
                     "dibayar" -> com.febrivio.sumbercomplang.R.drawable.bg_status_success
-                    "divalidasi" -> com.febrivio.sumbercomplang.R.drawable.bg_status_validate
+                    "cekin" -> com.febrivio.sumbercomplang.R.drawable.bg_status_validate
                     "gagal", "dibatalkan" -> com.febrivio.sumbercomplang.R.drawable.bg_status_failed
                     "selesai" -> com.febrivio.sumbercomplang.R.drawable.bg_status_finish
                     else -> com.febrivio.sumbercomplang.R.drawable.bg_status_pending

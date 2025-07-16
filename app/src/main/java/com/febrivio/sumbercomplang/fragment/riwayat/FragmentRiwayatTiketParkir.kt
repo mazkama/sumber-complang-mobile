@@ -175,7 +175,7 @@ class FragmentRiwayatTiketParkir : Fragment() {
 
             btnRekap.setOnClickListener {
                 updateButtonStates(btnRekap)
-                selectedStatus = "dibayar,selesai,divalidasi"
+                selectedStatus = "dibayar,selesai,cekin"
                 isRekapMode = true
                 cardRekapOmset.visibility = View.VISIBLE
                 layoutStatusFilter.visibility = View.GONE
@@ -191,8 +191,8 @@ class FragmentRiwayatTiketParkir : Fragment() {
 
     private fun setupFilterUI() {
         // Status Spinner
-        val statusList = listOf("Semua", "Menunggu", "Dibayar", "Divalidasi", "Selesai", "Gagal", "Dibatalkan")
-        val statusValue = listOf("", "menunggu", "dibayar", "divalidasi", "selesai", "gagal", "dibatalkan")
+        val statusList = listOf("Semua", "Menunggu", "Dibayar", "Cekin", "Selesai", "Gagal", "Dibatalkan")
+        val statusValue = listOf("", "menunggu", "dibayar", "cekin", "selesai", "gagal", "dibatalkan")
         b.spinnerStatus.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, statusList)
         b.spinnerStatus.setSelection(0)
         b.spinnerStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
@@ -322,7 +322,7 @@ class FragmentRiwayatTiketParkir : Fragment() {
         b.swipeRefresh.isRefreshing = true
         val token = session.getToken()
         ApiServiceAuth(thisParent, token).getRekapPembayaran(
-            status = "dibayar,selesai,divalidasi",
+            status = "dibayar,selesai,cekin",
             startDate = startDate,
             endDate = endDate,
             jenis = "parkir",
