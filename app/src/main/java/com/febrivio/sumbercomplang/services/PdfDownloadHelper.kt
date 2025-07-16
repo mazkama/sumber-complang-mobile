@@ -6,6 +6,7 @@ import android.content.Intent
 import android.os.Environment
 import android.widget.Toast
 import androidx.core.content.FileProvider
+import com.febrivio.sumbercomplang.network.ApiClient
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
@@ -18,22 +19,21 @@ import com.febrivio.sumbercomplang.network.ApiClient.ApiServiceAuth
  * Helper class to handle downloading and saving PDF reports
  */
 class PdfDownloadHelper(private val context: Context) {
-
     /**
-     * Downloads and saves a monthly report
+     * Downloads and saves a report for a specific date range
      *
-     * @param month Month in format "MM" (e.g., "06")
-     * @param year Year in format "YYYY" (e.g., "2025")
-     * @param reportType Type of report (e.g., "kolam", "rental")
+     * @param startDate Start date in format "YYYY-MM-DD" (e.g., "2025-06-01")
+     * @param endDate End date in format "YYYY-MM-DD" (e.g., "2025-06-30")
+     * @param jenis Type of report (e.g., "kolam", "rental")
      * @param token Authentication token
      * @param onStartDownload Callback when download starts
      * @param onFinishDownload Callback when download completes
      * @param onError Callback when an error occurs
      */
-    fun downloadMonthlyReport(
-        month: String,
-        year: String,
-        reportType: String,
+    fun downloadReportByDate(
+        startDate: String,
+        endDate: String,
+        jenis: String,
         token: String,
         onStartDownload: () -> Unit,
         onFinishDownload: () -> Unit,
@@ -43,7 +43,7 @@ class PdfDownloadHelper(private val context: Context) {
         onStartDownload()
 
         // Make API call
-        ApiServiceAuth(context, token).downloadMonthlyReport(month, year, reportType)
+        ApiServiceAuth(context, token).downloadReportByDate(startDate, endDate, jenis)
             .enqueue(object : Callback<ResponseBody> {
                 override fun onResponse(call: Call<ResponseBody>, response: Response<ResponseBody>) {
                     if (response.isSuccessful) {
@@ -52,8 +52,8 @@ class PdfDownloadHelper(private val context: Context) {
                             Thread {
                                 try {
                                     // Generate appropriate prefix based on report type
-                                    val filePrefix = "${reportType.capitalize()}_$month-$year"
-                                    saveReportPDF(responseBody, filePrefix, reportType)
+                                    val filePrefix = "${jenis.capitalize()}_${startDate}_to_${endDate}"
+                                    saveReportPDF(responseBody, filePrefix, jenis)
                                     onFinishDownload()
                                 } catch (e: Exception) {
                                     onError("Gagal menyimpan file: ${e.message}")

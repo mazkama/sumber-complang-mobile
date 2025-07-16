@@ -24,7 +24,6 @@ class ValidasiTiketActivity : AppCompatActivity() {
     private lateinit var validasiTiketAdapter: ValidasiTiketAdapter
     private lateinit var sessionManager: SessionManager
     private lateinit var transaksiData: TransaksiData
-    private val selectedTickets = mutableSetOf<Int>() // Track selected ticket IDs
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,11 +31,8 @@ class ValidasiTiketActivity : AppCompatActivity() {
         setContentView(b.root)
 
         sessionManager = SessionManager(this)
-
-        // Set back button
         b.btnBack.setOnClickListener { onBackPressed() }
 
-        // Get transaction data from intent
         transaksiData = intent.getSerializableExtra("transaksi") as? TransaksiData
             ?: run {
                 Toast.makeText(this, "Data transaksi tidak ditemukan", Toast.LENGTH_SHORT).show()
@@ -44,120 +40,44 @@ class ValidasiTiketActivity : AppCompatActivity() {
                 return
             }
 
-        // Set order ID in header
         b.tvOrderId.text = "ID#${transaksiData.orderId}"
-
-        // Set RecyclerView Layout Manager
         b.rvItemValidasi.layoutManager = LinearLayoutManager(this)
+        validasiTiketAdapter = ValidasiTiketAdapter(transaksiData.tiketDetails)
+        b.rvItemValidasi.adapter = validasiTiketAdapter
 
-        // Initialize adapter
-        setupAdapter()
-
-        // Add "Select All" checkbox if needed
-        if (b.cbSelectAll != null) {
-            setupSelectAllCheckbox()
-        }
-
-        // Setup validate button
         setupValidateButton()
     }
 
-    private fun setupAdapter() {
-        validasiTiketAdapter = ValidasiTiketAdapter(
-            transaksiData.tiketDetails
-        ) { ticket, isChecked ->
-            if (isChecked) {
-                selectedTickets.add(ticket.idDtTransaksi)
-            } else {
-                selectedTickets.remove(ticket.idDtTransaksi)
-            }
-
-            // Update validate button state
-            updateValidateButtonState()
-        }
-
-        b.rvItemValidasi.adapter = validasiTiketAdapter
-    }
-
-    private fun setupSelectAllCheckbox() {
-        b.cbSelectAll.setOnCheckedChangeListener { _, isChecked ->
-            validasiTiketAdapter.toggleSelectAll(isChecked)
-
-            if (isChecked) {
-                selectedTickets.clear()
-                // Only add non-validated tickets
-                transaksiData.tiketDetails.forEach { ticket ->
-                    if (ticket.waktu_validasi == null) {
-                        selectedTickets.add(ticket.idDtTransaksi)
-                    }
-                }
-            } else {
-                selectedTickets.clear()
-            }
-
-            updateValidateButtonState()
-        }
-    }
-
     private fun setupValidateButton() {
+        // Jika ada salah satu tiket belum validasi, status jadi "Belum Validasi"
+        val adaBelumValidasi = transaksiData.tiketDetails.any { it.waktu_validasi == null }
+        b.tvStatus.text = if (adaBelumValidasi) "Validasi CekIn" else "Validasi CekOut"
+
         b.btnValidasi.setOnClickListener {
-            if (selectedTickets.isEmpty()) {
-                Toast.makeText(this, "Pilih tiket terlebih dahulu", Toast.LENGTH_SHORT).show()
-                return@setOnClickListener
-            }
+            val ticketIds = transaksiData.tiketDetails
+                .map { it.idDtTransaksi }
 
-            showConfirmationDialog()
-        }
-
-        // Initial button state
-        updateValidateButtonState()
-    }
-
-    private fun updateValidateButtonState() {
-        if (::b.isInitialized && b.btnValidasi != null) {
-            // Check if there are any non-validated tickets selected
-            val hasValidTicketsSelected = selectedTickets.isNotEmpty() &&
-                transaksiData.tiketDetails.any {
-                    selectedTickets.contains(it.idDtTransaksi) && it.waktu_validasi == null
-                }
-
-            b.btnValidasi.isEnabled = hasValidTicketsSelected
-            b.btnValidasi.alpha = if (hasValidTicketsSelected) 1.0f else 0.5f
+            showConfirmationDialog(ticketIds)
         }
     }
 
-    private fun showConfirmationDialog() {
-        // Filter to only include non-validated tickets
-        val selectedTicketDetails = transaksiData.tiketDetails.filter { ticket ->
-            selectedTickets.contains(ticket.idDtTransaksi) && ticket.waktu_validasi == null
-        }
-
-        if (selectedTicketDetails.isEmpty()) {
-            Toast.makeText(this, "Tidak ada tiket yang dapat divalidasi", Toast.LENGTH_SHORT).show()
-            return
-        }
-
+    private fun showConfirmationDialog(ticketIds: List<Int>) {
+        val selectedTicketDetails = transaksiData.tiketDetails.filter { ticketIds.contains(it.idDtTransaksi) }
         val message = buildString {
-            append("Validasi tiket berikut?\n\n")
-
+            append("Validasi semua tiket berikut?\n\n")
             selectedTicketDetails.forEachIndexed { index, ticket ->
                 append("${index + 1}. ${ticket.namaTiket}")
-
                 if (ticket.jenisTiket.lowercase() == "parkir" && !ticket.noKendaraan.isNullOrEmpty()) {
                     append(" - ${ticket.noKendaraan}")
                 }
-
-                if (index < selectedTicketDetails.size - 1) {
-                    append("\n")
-                }
+                if (index < selectedTicketDetails.size - 1) append("\n")
             }
         }
-
         AlertDialog.Builder(this)
             .setTitle("Konfirmasi Validasi")
             .setMessage(message)
             .setPositiveButton("Validasi") { _, _ ->
-                validateTickets(selectedTicketDetails.map { it.idDtTransaksi })
+                validateTickets(ticketIds)
             }
             .setNegativeButton("Batal", null)
             .show()
@@ -182,12 +102,14 @@ class ValidasiTiketActivity : AppCompatActivity() {
                         response.body()?.let { validationResponse ->
                             if (validationResponse.status) {
                                 showSuccessDialog(validationResponse.message)
+                                finish()
                             } else {
                                 Toast.makeText(
                                     this@ValidasiTiketActivity,
                                     validationResponse.message,
                                     Toast.LENGTH_SHORT
                                 ).show()
+                                finish()
                             }
                         }
                     } else {

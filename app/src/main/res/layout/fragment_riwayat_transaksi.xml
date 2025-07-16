@@ -30,59 +30,177 @@
             android:textColor="@android:color/white"
             android:textSize="14sp" />
 
-        <!-- Filter Buttons -->
+        <!-- Tombol Show/Hide Filter -->
         <LinearLayout
+            android:id="@+id/layoutShowHideFilter"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:layout_marginTop="8dp"
+            android:gravity="start"
+            android:orientation="horizontal"
+            android:paddingEnd="16dp">
+
+            <TextView
+                android:id="@+id/tvToggleFilter"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="10dp"
+                android:background="@drawable/bg_filter_button"
+                android:clickable="true"
+                android:drawableEnd="@drawable/ic_arrow_drop_down"
+                android:drawablePadding="4dp"
+                android:focusable="true"
+                android:padding="10dp"
+                android:paddingStart="20dp"
+                android:paddingTop="10dp"
+                android:paddingBottom="10dp"
+                android:text="Tampilkan Filter"
+                android:textColor="@android:color/white"
+                android:textSize="14sp" />
+        </LinearLayout>
+
+        <!-- Filter Section (bisa di-hide/muncul) -->
+        <LinearLayout
+            android:id="@+id/filterSection"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
-            android:gravity="center"
-            android:orientation="horizontal"
-            android:weightSum="3">
+            android:orientation="vertical"
+            android:visibility="gone"
+            android:layout_marginTop="0dp"
+            android:padding="0dp"
+            android:elevation="0dp">
 
-            <TextView
-                android:id="@+id/btnSemua"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_filter_button"
-                android:gravity="center"
-                android:text="Semua"
-                android:textColor="@color/text_filter_selector"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:padding="8dp" />
+            <!-- Rentang Tanggal -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:gravity="center_vertical"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp"
+                android:paddingTop="8dp"
+                android:paddingBottom="8dp">
 
-            <TextView
-                android:id="@+id/btnKolam"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:layout_marginEnd="8dp"
-                android:background="@drawable/bg_filter_button"
-                android:gravity="center"
-                android:text="Kolam"
-                android:textColor="@color/text_filter_selector"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:padding="8dp" />
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="Tanggal"
+                    android:textColor="#FFFBFB"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
 
-            <TextView
-                android:id="@+id/btnParkir"
-                android:layout_width="0dp"
-                android:layout_height="40dp"
-                android:layout_weight="1"
-                android:background="@drawable/bg_filter_button"
-                android:gravity="center"
-                android:text="Parkir"
-                android:textColor="@color/text_filter_selector"
-                android:textSize="14sp"
-                android:textStyle="bold"
-                android:padding="8dp" />
+                <TextView
+                    android:id="@+id/tvStartDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_filter_date"
+                    android:padding="8dp"
+                    android:text="2025-07-13"
+                    android:textColor="#3D59F4"
+                    android:textSize="14sp"
+                    android:layout_marginEnd="8dp"/>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="8dp"
+                    android:text="s/d"
+                    android:textColor="#FFFBFB"
+                    android:textSize="14sp"
+                    android:textStyle="bold" />
+
+                <TextView
+                    android:id="@+id/tvEndDate"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/bg_filter_date"
+                    android:padding="8dp"
+                    android:text="2025-07-14"
+                    android:textColor="#3D59F4"
+                    android:textSize="14sp"/>
+            </LinearLayout>
+
+            <!-- Jenis & Status Filter dengan judul dan background putih pada spinner -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:layout_marginTop="8dp"
+                android:paddingStart="12dp"
+                android:paddingEnd="12dp">
+
+                <!-- Judul Jenis -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="2dp"
+                    android:text="Filter Jenis"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <!-- Spinner Jenis -->
+                <Spinner
+                    android:id="@+id/spinnerJenis"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@android:color/white"
+                    android:padding="8dp"
+                    android:layout_marginBottom="8dp"/>
+
+                <!-- Judul Status -->
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="2dp"
+                    android:text="Filter Status"
+                    android:textColor="@color/white"
+                    android:textSize="13sp"
+                    android:textStyle="bold" />
+
+                <!-- Spinner Status -->
+                <Spinner
+                    android:id="@+id/spinnerStatus"
+                    android:layout_width="match_parent"
+                    android:layout_height="40dp"
+                    android:background="@android:color/white"
+                    android:padding="8dp"/>
+            </LinearLayout>
+
+            <!-- Tombol Terapkan Filter dan Reset Filter -->
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginStart="12dp"
+                android:layout_marginEnd="12dp"
+                android:layout_marginTop="12dp">
+
+                <Button
+                    android:id="@+id/btnTerapkanFilter"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:backgroundTint="#F4F4F4"
+                    android:elevation="2dp"
+                    android:text="Terapkan Filter"
+                    android:textColor="@color/blue" />
+
+                <Button
+                    android:id="@+id/btnResetFilter"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="8dp"
+                    android:backgroundTint="#EEEEEE"
+                    android:text="Reset"
+                    android:textColor="@color/blue" />
+            </LinearLayout>
         </LinearLayout>
     </LinearLayout>
 
-    <!-- Swipe to Refresh -->
+    <!-- Swipe to Refresh dan RecyclerView tetap -->
     <androidx.swiperefreshlayout.widget.SwipeRefreshLayout
         android:id="@+id/swipeRefresh"
         android:layout_width="0dp"
@@ -96,7 +214,6 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-            <!-- RecyclerView -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvTransaksi"
                 android:layout_width="match_parent"
@@ -104,7 +221,6 @@
                 android:padding="16dp"
                 android:scrollbars="vertical" />
 
-            <!-- TextView data kosong -->
             <TextView
                 android:id="@+id/tvDataNon"
                 android:layout_width="wrap_content"
@@ -115,7 +231,6 @@
                 android:visibility="gone"
                 android:layout_centerInParent="true" />
 
-            <!-- ProgressBar Loading -->
             <ProgressBar
                 android:id="@+id/progressBar"
                 style="@android:style/Widget.DeviceDefault.Light.ProgressBar.Large"
@@ -125,5 +240,4 @@
                 android:visibility="gone" />
         </RelativeLayout>
     </androidx.swiperefreshlayout.widget.SwipeRefreshLayout>
-
 </androidx.constraintlayout.widget.ConstraintLayout>

@@ -85,24 +85,81 @@ class TransaksiTiketAdapter(
             }
 
             holder.binding.btnTambah.setOnClickListener {
-                // Check if this is a vehicle ticket
-                if (tiket.kategori.lowercase() == "mobil" || tiket.kategori.lowercase() == "motor") {
-                    showBottomSheetNopol(holder, tiket)
-                } else {
-                    // For non-vehicle tickets, just update quantity directly
+                val jenisLower = tiket.jenis.lowercase()
+                val kategoriLower = tiket.kategori.lowercase()
+
+                // Untuk jenis kolam, boleh lebih dari satu jenis/jumlah
+                if (jenisLower == "kolam") {
                     updateQuantityInBackground(idTiket, 1, position)
+                    return@setOnClickListener
                 }
+
+                // Untuk jenis parkir
+                if (jenisLower == "parkir") {
+                    val alreadySelectedId = selectedTickets.filter { it.value.quantity > 0 }.keys
+                    val isCurrentSelected = selectedTickets[idTiket]?.quantity ?: 0 > 0
+
+                    // Tidak boleh lebih dari satu jenis/jumlah
+                    if (alreadySelectedId.isNotEmpty() && !isCurrentSelected) {
+                        Toast.makeText(
+                            holder.itemView.context,
+                            "Hanya boleh memilih satu tiket parkir saja.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+                    if (selectedTickets[idTiket]?.quantity ?: 0 >= 1) {
+                        Toast.makeText(
+                            holder.itemView.context,
+                            "Jumlah tiket parkir hanya boleh satu.",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        return@setOnClickListener
+                    }
+
+                    // Jika kategori sepeda, tidak perlu bottom sheet nopol
+                    if (kategoriLower == "sepeda") {
+                        updateQuantityInBackground(idTiket, 1, position)
+                    } else {
+                        showBottomSheetNopol(holder, tiket)
+                    }
+                    return@setOnClickListener
+                }
+
+                // Untuk kategori lain, hanya boleh satu tiket dan tidak boleh beda tiket
+                val alreadySelectedId = selectedTickets.filter { it.value.quantity > 0 }.keys
+                val isCurrentSelected = selectedTickets[idTiket]?.quantity ?: 0 > 0
+
+                if (alreadySelectedId.isNotEmpty() && !isCurrentSelected) {
+                    Toast.makeText(
+                        holder.itemView.context,
+                        "Hanya boleh memilih satu tiket saja untuk kategori ini.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
+
+                if (selectedTickets[idTiket]?.quantity ?: 0 >= 1) {
+                    Toast.makeText(
+                        holder.itemView.context,
+                        "Jumlah tiket kategori ini hanya boleh satu.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    return@setOnClickListener
+                }
+
+                updateQuantityInBackground(idTiket, 1, position)
             }
 
             holder.binding.btnKurang.setOnClickListener {
                 // For vehicle tickets with plate numbers, show dialog to select which to remove
-                if ((tiket.kategori.lowercase() == "mobil" || tiket.kategori.lowercase() == "motor") 
-                    && ticketInfo.plateNumbers.isNotEmpty()) {
-                    showRemovePlateDialog(holder, tiket, position)
-                } else {
+//                if ((tiket.kategori.lowercase() == "mobil" || tiket.kategori.lowercase() == "motor")
+//                    && ticketInfo.plateNumbers.isNotEmpty()) {
+//                    showRemovePlateDialog(holder, tiket, position)
+//                } else {
                     // For non-vehicle tickets, just update quantity directly
                     updateQuantityInBackground(idTiket, -1, position)
-                }
+//                }
             }
         } else if (holder is TotalBayarViewHolder) {
             // Calculate total
@@ -160,35 +217,35 @@ class TransaksiTiketAdapter(
 
     private fun getSelectedTiket(): List<Tiket> {
         val result = mutableListOf<Tiket>()
-        
+
         listTiket.forEach { tiket ->
             val ticketInfo = selectedTickets[tiket.id_tiket]
             if (ticketInfo != null && ticketInfo.quantity > 0) {
-                // For vehicle tickets with plate numbers
-                if ((tiket.kategori.lowercase() == "mobil" || tiket.kategori.lowercase() == "motor") 
-                    && ticketInfo.plateNumbers.isNotEmpty()) {
-                    
-                    // Create individual ticket for each plate number
+                val kategoriLower = tiket.kategori.lowercase()
+                val jenisLower = tiket.jenis.lowercase()
+
+                // Untuk semua tiket parkir kecuali sepeda, kirim plat nomor jika ada
+                if (jenisLower == "parkir" && kategoriLower != "sepeda" && ticketInfo.plateNumbers.isNotEmpty()) {
                     ticketInfo.plateNumbers.forEach { plateNumber ->
                         result.add(
                             tiket.copy(
-                                jumlah = 1,  // Each vehicle is one ticket
+                                jumlah = 1,
                                 no_kendaraan = plateNumber
                             )
                         )
                     }
                 } else {
-                    // For regular tickets (non-vehicles)
+                    // Untuk tiket lain, tetap kirim plat nomor jika ada
                     result.add(
                         tiket.copy(
                             jumlah = ticketInfo.quantity,
-                            no_kendaraan = ""
+                            no_kendaraan = if (ticketInfo.plateNumbers.isNotEmpty()) ticketInfo.plateNumbers.first() else ""
                         )
                     )
                 }
             }
         }
-        
+
         return result
     }    // Updated method to store license plate number
     private fun showBottomSheetNopol(holder: TiketViewHolder, tiket: Tiket) {

@@ -14,18 +14,12 @@
         android:orientation="vertical"
         android:padding="16dp">
 
-        <!-- Top Row: Checkbox + Ticket Info -->
+        <!-- Ticket Info Only, No Checkbox -->
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:gravity="center_vertical">
-
-            <CheckBox
-                android:id="@+id/checkboxValidasi"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content" 
-                app:buttonTint="#3D59F4"/>
 
             <LinearLayout
                 android:layout_width="0dp"
@@ -68,7 +62,7 @@
                 tools:text="Rp 50.000" />
         </LinearLayout>
 
-        <!-- License Plate Section (initially hidden, shown only for parking tickets) -->
+        <!-- License Plate Section (unchanged) -->
         <LinearLayout
             android:id="@+id/layoutPlatNomor"
             android:layout_width="match_parent"

@@ -84,13 +84,14 @@
             android:background="#FFFFFF"
             android:elevation="2dp">
 
-            <CheckBox
-                android:id="@+id/cbSelectAll"
+            <TextView
+                android:id="@+id/tvStatus"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Pilih Semua"
+                android:text="Status Validasi"
                 android:textColor="#333333"
-                android:textSize="16sp" />
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <View
                 android:layout_width="0dp"

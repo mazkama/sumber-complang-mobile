@@ -20,6 +20,7 @@ import com.febrivio.sumbercomplang.model.TiketValidationResponse
 import com.febrivio.sumbercomplang.model.TransaksiTiketRequest
 import com.febrivio.sumbercomplang.model.TransaksiTiketResponse
 import com.febrivio.sumbercomplang.model.CountThisMonthResponse
+import com.febrivio.sumbercomplang.model.RekapPembayaranResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
@@ -100,10 +101,21 @@ interface ApiService {
 
     @GET("transaksi-tiket")
     fun getRiwayatTransaksi(
-        @Query("jenis") jenis: String,
-        @Query("status") status: String,
-        @Query("page") page: Int,
+        @Query("jenis") jenis: String?,
+        @Query("status") status: String?,
+        @Query("start_date") startDate: String?,
+        @Query("end_date") endDate: String?,
+        @Query("page") page: Int?
     ): Call<RiwayatTransaksiTiketResponse>
+    
+    @GET("rekap-pembayaran")
+    fun getRekapPembayaran(
+        @Query("status") status: String?,
+        @Query("start_date") startDate: String?,
+        @Query("end_date") endDate: String?,
+        @Query("jenis") jenis: String?,
+        @Query("page") page: Int?
+    ): Call<RekapPembayaranResponse>
 
     @GET("transaksi/detail/{orderId}")
     fun getTransaksiDetail(@Path("orderId") orderId: String): Call<TransaksiTiketResponse>
@@ -126,11 +138,11 @@ interface ApiService {
     ): Call<ChangePasswordResponse>
 
     @Streaming
-    @GET("transaksi/export/monthly")
-    fun downloadMonthlyReport(
-        @Query("bulan") month: String,
-        @Query("tahun") year: String,
-        @Query("jenis") type: String
+    @GET("transaksi/export/report")
+    fun downloadReportByDate(
+        @Query("start_date") startDate: String,
+        @Query("end_date") endDate: String,
+        @Query("jenis") jenis: String
     ): Call<ResponseBody>
 
     @GET("dashboard/statistics")

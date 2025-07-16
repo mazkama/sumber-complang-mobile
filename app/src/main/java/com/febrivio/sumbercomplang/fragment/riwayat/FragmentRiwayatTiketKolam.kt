@@ -1,5 +1,6 @@
 package com.febrivio.sumbercomplang.fragment.riwayat
 
+import android.app.DatePickerDialog
 import android.content.ActivityNotFoundException
 import android.content.Intent
 import android.os.Bundle
@@ -7,6 +8,8 @@ import android.os.Environment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.AdapterView
+import android.widget.ArrayAdapter
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.content.FileProvider
@@ -15,8 +18,10 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.febrivio.sumbercomplang.DetailTransaksiActivity
 import com.febrivio.sumbercomplang.MainActivity
+import com.febrivio.sumbercomplang.R
 import com.febrivio.sumbercomplang.adapter.RiwayatTransaksiAdapter
 import com.febrivio.sumbercomplang.databinding.FragmentRiwayatTiketKolamBinding
+import com.febrivio.sumbercomplang.model.RekapPembayaranResponse
 import com.febrivio.sumbercomplang.model.RiwayatTransaksiItem
 import com.febrivio.sumbercomplang.model.RiwayatTransaksiTiketResponse
 import com.febrivio.sumbercomplang.model.TransaksiTiketResponse
@@ -29,7 +34,10 @@ import retrofit2.Callback
 import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
+import java.text.SimpleDateFormat
 import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
 class FragmentRiwayatTiketKolam : Fragment() {
 
@@ -42,11 +50,15 @@ class FragmentRiwayatTiketKolam : Fragment() {
     private var currentPage = 1
     private var isLoading = false
     private var isLastPage = false
-    private var selectedStatus = ""
+    private var selectedStatus: String = ""
+    private var startDate: String = ""
+    private var endDate: String = ""
 
     private var lastRefreshTime: Long = 0
 
     private lateinit var session: SessionManager
+
+    private var isRekapMode = false
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -66,6 +78,14 @@ class FragmentRiwayatTiketKolam : Fragment() {
         // Initialize "Semua" as selected
         b.btnSemua.isSelected = true
         selectedStatus = ""
+        val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+        val today = sdf.format(Date())
+        startDate = today
+        endDate = today
+        b.tvStartDate.text = today
+        b.tvEndDate.text = today
+
+        setupFilterUI()
         fetchRiwayatTransaksiData(selectedStatus)
 
         // Get current month and year
@@ -76,35 +96,30 @@ class FragmentRiwayatTiketKolam : Fragment() {
         // Set button text with current month and year
         b.btnCetakLaporan.text = "Cetak Laporan - $monthName $year"
 
+        // Set text cetak laporan sesuai rentang tanggal filter
+        b.btnCetakLaporan.text = "Cetak Laporan - $startDate s/d $endDate"
+
+        // Tombol cetak laporan
         b.btnCetakLaporan.setOnClickListener {
-            // Get current month and year
-            val calendar = Calendar.getInstance()
-            val month = String.format("%02d", calendar.get(Calendar.MONTH) + 1)
-            val year = calendar.get(Calendar.YEAR).toString()
-
-            // Get token
+            if (riwayatTransaksiList.isEmpty()) {
+                Toast.makeText(thisParent, "Tidak ada data untuk dicetak.", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
             val token = session.getToken()
-
-            // Use the helper class
             val pdfHelper = PdfDownloadHelper(thisParent)
-            pdfHelper.downloadMonthlyReport(
-                month = month,
-                year = year,
-                reportType = "kolam",
+            pdfHelper.downloadReportByDate(
+                startDate = startDate,
+                endDate = endDate,
+                jenis = "kolam",
                 token = token.toString(),
                 onStartDownload = {
-                    // Show loading indicator
                     b.swipeRefresh.isRefreshing = true
                     Toast.makeText(thisParent, "Memulai download laporan...", Toast.LENGTH_SHORT).show()
                 },
                 onFinishDownload = {
-                    // Hide loading indicator
-                    activity?.runOnUiThread {
-                        b.swipeRefresh.isRefreshing = false
-                    }
+                    activity?.runOnUiThread { b.swipeRefresh.isRefreshing = false }
                 },
                 onError = { errorMessage ->
-                    // Handle error and hide loading
                     activity?.runOnUiThread {
                         b.swipeRefresh.isRefreshing = false
                         Toast.makeText(thisParent, errorMessage, Toast.LENGTH_SHORT).show()
@@ -148,7 +163,11 @@ class FragmentRiwayatTiketKolam : Fragment() {
                     super.onScrolled(recyclerView, dx, dy)
                     val layoutManager = recyclerView.layoutManager as LinearLayoutManager
                     if (!isLoading && !isLastPage && layoutManager.findLastVisibleItemPosition() >= layoutManager.itemCount - 5) {
-                        fetchRiwayatTransaksiData()
+                        if (isRekapMode) {
+                            fetchRekapPembayaran()
+                        } else {
+                            fetchRiwayatTransaksiData(selectedStatus)
+                        }
                     }
                 }
             })
@@ -157,7 +176,7 @@ class FragmentRiwayatTiketKolam : Fragment() {
 
     private fun setupListeners() {
         with(b) {
-            val buttons = listOf(btnSemua, btnReserved)
+            val buttons = listOf(btnSemua, btnRekap)
 
             fun updateButtonStates(selectedButton: TextView) {
                 buttons.forEach { button ->
@@ -165,26 +184,118 @@ class FragmentRiwayatTiketKolam : Fragment() {
                 }
             }
 
-            // Set initial state for "Semua"
-            updateButtonStates(btnSemua)
-
             btnSemua.setOnClickListener {
                 updateButtonStates(btnSemua)
                 selectedStatus = ""
+                isRekapMode = false
+                cardRekapOmset.visibility = View.GONE
+                layoutStatusFilter.visibility = View.VISIBLE // Tampilkan filter status
                 refreshData()
             }
 
-            btnReserved.setOnClickListener {
-                updateButtonStates(btnReserved)
-                selectedStatus = "reserved"
-                refreshData()
+            btnRekap.setOnClickListener {
+                updateButtonStates(btnRekap)
+                selectedStatus = "dibayar,selesai,divalidasi"
+                isRekapMode = true
+                cardRekapOmset.visibility = View.VISIBLE
+                layoutStatusFilter.visibility = View.GONE // Sembunyikan filter status
+                fetchRekapPembayaran()
             }
 
             swipeRefresh.setOnRefreshListener {
                 swipeRefresh.isRefreshing = true
-                refreshData()
+                if (isRekapMode) fetchRekapPembayaran() else refreshData()
             }
         }
+    }
+
+    private fun setupFilterUI() {
+        // Status Spinner
+        val statusList = listOf("Semua", "Menunggu", "Dibayar", "Divalidasi", "Selesai", "Gagal", "Dibatalkan")
+        val statusValue = listOf("", "menunggu", "dibayar", "divalidasi", "selesai", "gagal", "dibatalkan")
+        b.spinnerStatus.adapter = ArrayAdapter(requireContext(), android.R.layout.simple_spinner_dropdown_item, statusList)
+        b.spinnerStatus.setSelection(0)
+        b.spinnerStatus.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
+            override fun onItemSelected(parent: AdapterView<*>, view: View?, position: Int, id: Long) {
+                selectedStatus = statusValue[position]
+            }
+            override fun onNothingSelected(parent: AdapterView<*>) {}
+        }
+
+        // Tanggal
+        b.tvStartDate.setOnClickListener {
+            showDatePicker(startDate) { date ->
+                startDate = date
+                b.tvStartDate.text = date
+                b.btnCetakLaporan.text = "Cetak Laporan - $startDate s/d $endDate"
+            }
+        }
+        b.tvEndDate.setOnClickListener {
+            showDatePicker(endDate) { date ->
+                endDate = date
+                b.tvEndDate.text = date
+                b.btnCetakLaporan.text = "Cetak Laporan - $startDate s/d $endDate"
+            }
+        }
+
+        // Tombol Terapkan Filter
+        b.btnTerapkanFilter.setOnClickListener {
+            currentPage = 1
+            isLastPage = false
+            if (isRekapMode) {
+                fetchRekapPembayaran() // Panggil rekap agar total transaksi & omset terupdate
+            } else {
+                fetchRiwayatTransaksiData(selectedStatus)
+            }
+        }
+
+        // Tombol Reset Filter
+        b.btnResetFilter.setOnClickListener {
+            b.spinnerStatus.setSelection(0)
+            val today = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(Date())
+            startDate = today
+            endDate = today
+            b.tvStartDate.text = today
+            b.tvEndDate.text = today
+            b.btnCetakLaporan.text = "Cetak Laporan - $startDate s/d $endDate"
+            currentPage = 1
+            isLastPage = false
+            if (isRekapMode) {
+                fetchRekapPembayaran()
+            } else {
+                fetchRiwayatTransaksiData("")
+            }
+        }
+
+        // Toggle filter
+        b.tvToggleFilter.setOnClickListener {
+            if (b.filterSection.visibility == View.VISIBLE) {
+                b.filterSection.visibility = View.GONE
+                b.tvToggleFilter.text = "Filter"
+                b.tvToggleFilter.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow_drop_down, 0)
+            } else {
+                b.filterSection.visibility = View.VISIBLE
+                b.tvToggleFilter.text = "Filter"
+                b.tvToggleFilter.setCompoundDrawablesWithIntrinsicBounds(0, 0, R.drawable.ic_arrow_drop_up, 0)
+            }
+        }
+    }
+
+    private fun showDatePicker(current: String, onDateSelected: (String) -> Unit) {
+        val cal = Calendar.getInstance()
+        try {
+            val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.getDefault())
+            cal.time = sdf.parse(current) ?: Date()
+        } catch (_: Exception) {}
+        DatePickerDialog(requireContext(),
+            { _, year, month, dayOfMonth ->
+                val date = String.format("%04d-%02d-%02d", year, month + 1, dayOfMonth)
+                onDateSelected(date)
+            },
+            cal.get(Calendar.YEAR),
+            cal.get(Calendar.MONTH),
+            cal.get(Calendar.DAY_OF_MONTH)
+        ).show()
     }
 
     private fun fetchRiwayatTransaksiData(status: String = "") {
@@ -193,7 +304,13 @@ class FragmentRiwayatTiketKolam : Fragment() {
         b.swipeRefresh.isRefreshing = true
         val token = session.getToken()
 
-        ApiServiceAuth(thisParent,token).getRiwayatTransaksi("kolam", status,currentPage).enqueue(object : Callback<RiwayatTransaksiTiketResponse> {
+        ApiServiceAuth(thisParent, token).getRiwayatTransaksi(
+            jenis = "kolam",
+            status = status,
+            startDate = startDate,
+            endDate = endDate,
+            page = currentPage
+        ).enqueue(object : Callback<RiwayatTransaksiTiketResponse> {
             override fun onResponse(call: Call<RiwayatTransaksiTiketResponse>, response: Response<RiwayatTransaksiTiketResponse>) {
                 isLoading = false
                 b.swipeRefresh.isRefreshing = false
@@ -263,6 +380,55 @@ class FragmentRiwayatTiketKolam : Fragment() {
         isLastPage = false
         b.tvDataNon.visibility = View.GONE
         fetchRiwayatTransaksiData(selectedStatus) // Pass the selecteStatus parameter
+    }
+
+    private fun fetchRekapPembayaran() {
+        if (isLoading) return
+        isLoading = true
+        b.swipeRefresh.isRefreshing = true
+        val token = session.getToken()
+
+        ApiServiceAuth(thisParent, token).getRekapPembayaran(
+            status = "dibayar,selesai,divalidasi",
+            startDate = startDate,
+            endDate = endDate,
+            jenis = "kolam",
+            page = currentPage // <-- gunakan currentPage
+        ).enqueue(object : Callback<RekapPembayaranResponse> {
+            override fun onResponse(call: Call<RekapPembayaranResponse>, response: Response<RekapPembayaranResponse>) {
+                isLoading = false
+                b.swipeRefresh.isRefreshing = false
+                if (response.isSuccessful && response.body()?.success == true) {
+                    val body = response.body()!!
+                    b.cardRekapOmset.visibility = View.VISIBLE
+                    b.tvTotalTransaksi.text = "${body.total_transaksi}"
+                    b.tvTotalPembayaran.text = "${body.total_pembayaran}"
+
+                    val listData = body.data.data
+                    if (currentPage == 1) {
+                        riwayatTransaksiList.clear()
+                    }
+                    riwayatTransaksiList.addAll(listData)
+                    riwayatTransaksiAdapter.notifyDataSetChanged()
+
+                    // Update pagination
+                    isLastPage = currentPage >= body.data.last_page
+                    if (!isLastPage) currentPage++
+
+                    b.tvDataNon.visibility = if (riwayatTransaksiList.isEmpty()) View.VISIBLE else View.GONE
+                } else {
+                    b.cardRekapOmset.visibility = View.GONE
+                    Toast.makeText(thisParent, "Gagal memuat rekap pembayaran", Toast.LENGTH_SHORT).show()
+                }
+            }
+
+            override fun onFailure(call: Call<RekapPembayaranResponse>, t: Throwable) {
+                isLoading = false
+                b.swipeRefresh.isRefreshing = false
+                b.cardRekapOmset.visibility = View.GONE
+                Toast.makeText(thisParent, "Gagal memuat rekap pembayaran", Toast.LENGTH_SHORT).show()
+            }
+        })
     }
 
     override fun onResume() {
